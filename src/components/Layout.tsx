@@ -1,15 +1,38 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, Link, useLocation } from 'react-router-dom'
 import { BookOpen } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 export default function Layout() {
+  const location = useLocation()
+
   return (
     <div className="flex flex-col min-h-screen bg-background font-sans">
       <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-center sm:justify-start">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <BookOpen className="h-6 w-6 text-primary" />
             <span className="font-semibold text-lg text-foreground tracking-tight">EduTech</span>
           </div>
+          <nav className="flex items-center gap-4 sm:gap-6">
+            <Link
+              to="/"
+              className={cn(
+                'text-sm font-medium transition-colors hover:text-primary',
+                location.pathname === '/' ? 'text-primary' : 'text-muted-foreground',
+              )}
+            >
+              Cadastro
+            </Link>
+            <Link
+              to="/financeiro"
+              className={cn(
+                'text-sm font-medium transition-colors hover:text-primary',
+                location.pathname === '/financeiro' ? 'text-primary' : 'text-muted-foreground',
+              )}
+            >
+              Financeiro
+            </Link>
+          </nav>
         </div>
       </header>
 
