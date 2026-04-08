@@ -32,6 +32,15 @@ export default function Layout() {
             >
               Financeiro
             </Link>
+            <Link
+              to="/aluno"
+              className={cn(
+                'text-sm font-medium transition-colors hover:text-primary',
+                location.pathname === '/aluno' ? 'text-primary' : 'text-muted-foreground',
+              )}
+            >
+              Painel do Aluno
+            </Link>
           </nav>
         </div>
       </header>
