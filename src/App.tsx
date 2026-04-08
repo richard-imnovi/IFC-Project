@@ -7,22 +7,34 @@ import Financeiro from './pages/Financeiro'
 import DashboardAluno from './pages/DashboardAluno'
 import NotFound from './pages/NotFound'
 import Layout from './components/Layout'
+import Login from './pages/Login'
+import { AuthProvider } from './hooks/use-auth'
+import { ProtectedRoute } from './components/ProtectedRoute'
 
 const App = () => (
-  <BrowserRouter future={{ v7_startTransition: false, v7_relativeSplatPath: false }}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner position="top-right" />
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Index />} />
-          <Route path="/financeiro" element={<Financeiro />} />
-          <Route path="/aluno" element={<DashboardAluno />} />
-        </Route>
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </TooltipProvider>
-  </BrowserRouter>
+  <AuthProvider>
+    <BrowserRouter future={{ v7_startTransition: false, v7_relativeSplatPath: false }}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner position="top-right" />
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+
+            <Route element={<ProtectedRoute allowedRoles={['financeiro']} />}>
+              <Route path="/financeiro" element={<Financeiro />} />
+            </Route>
+
+            <Route element={<ProtectedRoute allowedRoles={['aluno']} />}>
+              <Route path="/aluno" element={<DashboardAluno />} />
+            </Route>
+          </Route>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </TooltipProvider>
+    </BrowserRouter>
+  </AuthProvider>
 )
 
 export default App

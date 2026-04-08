@@ -1,9 +1,18 @@
-import { Outlet, Link, useLocation } from 'react-router-dom'
-import { BookOpen } from 'lucide-react'
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
+import { BookOpen, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/hooks/use-auth'
+import { Button } from '@/components/ui/button'
 
 export default function Layout() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { user, profile, signOut } = useAuth()
+
+  const handleSignOut = async () => {
+    await signOut()
+    navigate('/login')
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background font-sans">
@@ -14,33 +23,64 @@ export default function Layout() {
             <span className="font-semibold text-lg text-foreground tracking-tight">EduTech</span>
           </div>
           <nav className="flex items-center gap-4 sm:gap-6">
-            <Link
-              to="/"
-              className={cn(
-                'text-sm font-medium transition-colors hover:text-primary',
-                location.pathname === '/' ? 'text-primary' : 'text-muted-foreground',
-              )}
-            >
-              Cadastro
-            </Link>
-            <Link
-              to="/financeiro"
-              className={cn(
-                'text-sm font-medium transition-colors hover:text-primary',
-                location.pathname === '/financeiro' ? 'text-primary' : 'text-muted-foreground',
-              )}
-            >
-              Financeiro
-            </Link>
-            <Link
-              to="/aluno"
-              className={cn(
-                'text-sm font-medium transition-colors hover:text-primary',
-                location.pathname === '/aluno' ? 'text-primary' : 'text-muted-foreground',
-              )}
-            >
-              Painel do Aluno
-            </Link>
+            {!user && (
+              <>
+                <Link
+                  to="/"
+                  className={cn(
+                    'text-sm font-medium transition-colors hover:text-primary',
+                    location.pathname === '/' ? 'text-primary' : 'text-muted-foreground',
+                  )}
+                >
+                  Cadastro
+                </Link>
+                <Link
+                  to="/login"
+                  className={cn(
+                    'text-sm font-medium transition-colors hover:text-primary',
+                    location.pathname === '/login' ? 'text-primary' : 'text-muted-foreground',
+                  )}
+                >
+                  Entrar
+                </Link>
+              </>
+            )}
+
+            {profile?.tipo_acesso === 'financeiro' && (
+              <Link
+                to="/financeiro"
+                className={cn(
+                  'text-sm font-medium transition-colors hover:text-primary',
+                  location.pathname === '/financeiro' ? 'text-primary' : 'text-muted-foreground',
+                )}
+              >
+                Financeiro
+              </Link>
+            )}
+
+            {profile?.tipo_acesso === 'aluno' && (
+              <Link
+                to="/aluno"
+                className={cn(
+                  'text-sm font-medium transition-colors hover:text-primary',
+                  location.pathname === '/aluno' ? 'text-primary' : 'text-muted-foreground',
+                )}
+              >
+                Painel do Aluno
+              </Link>
+            )}
+
+            {user && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleSignOut}
+                className="text-muted-foreground hover:text-primary h-8 px-2 sm:px-3"
+              >
+                <LogOut className="h-4 w-4 mr-0 sm:mr-2" />
+                <span className="hidden sm:inline">Sair</span>
+              </Button>
+            )}
           </nav>
         </div>
       </header>
