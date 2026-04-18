@@ -259,4 +259,16 @@ export default function Index() {
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
-                  <Loader2 className="h-5 w-5 a
+                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                ) : (
+                  <UserPlus className="h-5 w-5 mr-2 transition-transform group-hover:scale-110" />
+                )}
+                Cadastrar Conta
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
