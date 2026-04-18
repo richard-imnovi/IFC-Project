@@ -1,7 +1,15 @@
-import { useState, useMemo } from 'react'
-import { Users, CheckCircle, AlertCircle, MessageCircle, Filter } from 'lucide-react'
+import { useState, useEffect, useMemo } from 'react'
+import {
+  Users,
+  CheckCircle,
+  AlertCircle,
+  MessageCircle,
+  Filter,
+  BookOpen,
+  Loader2,
+} from 'lucide-react'
 import { toast } from 'sonner'
-
+import { Link } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -20,8 +28,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { supabase } from '@/lib/supabase/client'
 
-type Student = {
+type FinanceiroStudent = {
   id: string
   name: string
   turma: string
@@ -30,94 +39,83 @@ type Student = {
   fee: number
 }
 
-const mockStudents: Student[] = [
-  {
-    id: '1',
-    name: 'Ana Silva',
-    turma: 'Turma A - Manhã',
-    turmaId: 'turma-a',
-    status: 'em_dia',
-    fee: 450,
-  },
-  {
-    id: '2',
-    name: 'Carlos Santos',
-    turma: 'Turma B - Tarde',
-    turmaId: 'turma-b',
-    status: 'atrasado',
-    fee: 450,
-  },
-  {
-    id: '3',
-    name: 'Beatriz Costa',
-    turma: 'Turma A - Manhã',
-    turmaId: 'turma-a',
-    status: 'em_dia',
-    fee: 450,
-  },
-  {
-    id: '4',
-    name: 'Daniel Oliveira',
-    turma: 'Turma C - Noite',
-    turmaId: 'turma-c',
-    status: 'atrasado',
-    fee: 500,
-  },
-  {
-    id: '5',
-    name: 'Eduarda Lima',
-    turma: 'Turma B - Tarde',
-    turmaId: 'turma-b',
-    status: 'em_dia',
-    fee: 450,
-  },
-  {
-    id: '6',
-    name: 'Felipe Mendes',
-    turma: 'Turma C - Noite',
-    turmaId: 'turma-c',
-    status: 'em_dia',
-    fee: 500,
-  },
-  {
-    id: '7',
-    name: 'Gabriel Souza',
-    turma: 'Turma A - Manhã',
-    turmaId: 'turma-a',
-    status: 'atrasado',
-    fee: 450,
-  },
-  {
-    id: '8',
-    name: 'Helena Rocha',
-    turma: 'Turma B - Tarde',
-    turmaId: 'turma-b',
-    status: 'em_dia',
-    fee: 450,
-  },
-]
-
 export default function Financeiro() {
   const [selectedTurma, setSelectedTurma] = useState<string>('todas')
+  const [students, setStudents] = useState<FinanceiroStudent[]>([])
+  const [turmas, setTurmas] = useState<{ id: string; nome_turma: string }[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  const loadData = async () => {
+    setIsLoading(true)
+
+    const { data: turmasData } = await supabase
+      .from('turmas')
+      .select('id, nome_turma')
+      .order('nome_turma')
+    if (turmasData) setTurmas(turmasData)
+
+    const { data: alunosData } = await supabase.from('alunos').select(`
+        id,
+        nome,
+        turma,
+        turmas (nome_turma),
+        mensalidades_templates (
+          valor,
+          mensalidades_geradas (
+            status
+          )
+        )
+      `)
+
+    if (alunosData) {
+      const mappedStudents: FinanceiroStudent[] = alunosData.map((aluno) => {
+        const templates = (aluno.mensalidades_templates as any[]) || []
+        const activeTemplate = templates[0]
+
+        let fee = 0
+        let status: 'em_dia' | 'atrasado' = 'em_dia'
+
+        if (activeTemplate) {
+          fee = activeTemplate.valor
+          const geradas = activeTemplate.mensalidades_geradas || []
+          const hasAtrasado = geradas.some((g: any) => g.status === 'atrasado')
+          if (hasAtrasado) status = 'atrasado'
+        }
+
+        return {
+          id: aluno.id,
+          name: aluno.nome,
+          turma: (aluno.turmas as any)?.nome_turma || 'Sem Turma',
+          turmaId: aluno.turma || '',
+          status,
+          fee,
+        }
+      })
+      setStudents(mappedStudents)
+    }
+
+    setIsLoading(false)
+  }
 
   const filteredStudents = useMemo(() => {
-    if (selectedTurma === 'todas') return mockStudents
-    return mockStudents.filter((s) => s.turmaId === selectedTurma)
-  }, [selectedTurma])
+    if (selectedTurma === 'todas') return students
+    return students.filter((s) => s.turmaId === selectedTurma)
+  }, [selectedTurma, students])
 
   const stats = useMemo(() => {
     return {
-      total: mockStudents.length,
-      emDia: mockStudents.filter((s) => s.status === 'em_dia').length,
-      atrasados: mockStudents.filter((s) => s.status === 'atrasado').length,
+      total: students.length,
+      emDia: students.filter((s) => s.status === 'em_dia').length,
+      atrasados: students.filter((s) => s.status === 'atrasado').length,
     }
-  }, [])
+  }, [students])
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value)
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
   }
 
   const handleSendMessage = (studentName: string) => {
@@ -133,6 +131,11 @@ export default function Financeiro() {
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">Dashboard Financeiro</h1>
           <p className="text-slate-600 mt-1">Visão geral e gestão de pagamentos dos alunos.</p>
         </div>
+        <Button asChild variant="outline">
+          <Link to="/turmas">
+            <BookOpen className="w-4 h-4 mr-2" /> Gerenciar Turmas
+          </Link>
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -176,70 +179,83 @@ export default function Financeiro() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="todas">Todas as Turmas</SelectItem>
-                <SelectItem value="turma-a">Turma A - Manhã</SelectItem>
-                <SelectItem value="turma-b">Turma B - Tarde</SelectItem>
-                <SelectItem value="turma-c">Turma C - Noite</SelectItem>
+                {turmas.map((t) => (
+                  <SelectItem key={t.id} value={t.id}>
+                    {t.nome_turma}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Turma</TableHead>
-                <TableHead>Nome do Aluno</TableHead>
-                <TableHead>Situação</TableHead>
-                <TableHead>Valor da Mensalidade</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredStudents.length === 0 ? (
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                    Nenhum aluno encontrado para este filtro.
-                  </TableCell>
+                  <TableHead>Turma</TableHead>
+                  <TableHead>Nome do Aluno</TableHead>
+                  <TableHead>Situação</TableHead>
+                  <TableHead>Valor da Mensalidade</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
-              ) : (
-                filteredStudents.map((student) => (
-                  <TableRow key={student.id}>
-                    <TableCell className="font-medium text-slate-600">{student.turma}</TableCell>
-                    <TableCell className="font-medium">{student.name}</TableCell>
-                    <TableCell>
-                      {student.status === 'em_dia' ? (
-                        <Badge
-                          variant="outline"
-                          className="border-emerald-200 bg-emerald-50 text-emerald-700"
-                        >
-                          Em dia
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="border-red-200 bg-red-50 text-red-700">
-                          Atrasado
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-slate-600">{formatCurrency(student.fee)}</TableCell>
-                    <TableCell className="text-right">
-                      {student.status === 'atrasado' && (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => handleSendMessage(student.name)}
-                          className="h-8"
-                        >
-                          <MessageCircle className="h-4 w-4 mr-2" />
-                          <span className="hidden sm:inline">Enviar Mensagem</span>
-                          <span className="inline sm:hidden">Mensagem</span>
-                        </Button>
-                      )}
+              </TableHeader>
+              <TableBody>
+                {filteredStudents.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                      Nenhum aluno encontrado para este filtro.
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  filteredStudents.map((student) => (
+                    <TableRow key={student.id}>
+                      <TableCell className="font-medium text-slate-600">{student.turma}</TableCell>
+                      <TableCell className="font-medium">{student.name}</TableCell>
+                      <TableCell>
+                        {student.status === 'em_dia' ? (
+                          <Badge
+                            variant="outline"
+                            className="border-emerald-200 bg-emerald-50 text-emerald-700"
+                          >
+                            Em dia
+                          </Badge>
+                        ) : (
+                          <Badge
+                            variant="outline"
+                            className="border-red-200 bg-red-50 text-red-700"
+                          >
+                            Atrasado
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-slate-600">
+                        {formatCurrency(student.fee)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {student.status === 'atrasado' && (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleSendMessage(student.name)}
+                            className="h-8"
+                          >
+                            <MessageCircle className="h-4 w-4 mr-2" />
+                            <span className="hidden sm:inline">Enviar Mensagem</span>
+                            <span className="inline sm:hidden">Mensagem</span>
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   User,
   Calendar,
@@ -8,9 +8,9 @@ import {
   AlertCircle,
   DollarSign,
   Receipt,
+  Loader2,
 } from 'lucide-react'
 import { toast } from 'sonner'
-
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import {
   Table,
@@ -31,42 +31,107 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { useAuth } from '@/hooks/use-auth'
+import { supabase } from '@/lib/supabase/client'
+import { format, parseISO } from 'date-fns'
 
 type PaymentStatus = 'pago' | 'pendente' | 'atrasado'
 
-const studentData = {
-  name: 'Lucas Ferreira',
-  turma: 'Turma A - Manhã',
-  nextPayment: {
-    dueDate: '10/05/2026',
-    amount: 450,
-    status: 'pendente' as PaymentStatus,
-  },
-}
-
-const paymentHistory = [
-  { id: '1', date: '10/04/2026', amount: 450, status: 'pago' as PaymentStatus },
-  { id: '2', date: '10/03/2026', amount: 450, status: 'pago' as PaymentStatus },
-  { id: '3', date: '10/02/2026', amount: 450, status: 'pago' as PaymentStatus },
-  { id: '4', date: '10/01/2026', amount: 450, status: 'pago' as PaymentStatus },
-]
-
 export default function DashboardAluno() {
+  const { user } = useAuth()
+  const [isLoading, setIsLoading] = useState(true)
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false)
+  const [alunoData, setAlunoData] = useState<any>(null)
+  const [mensalidades, setMensalidades] = useState<any[]>([])
+
+  useEffect(() => {
+    async function loadData() {
+      if (!user) return
+
+      const { data: aluno, error: alunoErr } = await supabase
+        .from('alunos')
+        .select('*, turmas(nome_turma)')
+        .eq('user_id', user.id)
+        .single()
+
+      if (alunoErr || !aluno) {
+        setIsLoading(false)
+        return
+      }
+
+      setAlunoData(aluno)
+
+      const { data: templates } = await supabase
+        .from('mensalidades_templates')
+        .select('id, valor')
+        .eq('aluno_id', aluno.id)
+
+      if (templates && templates.length > 0) {
+        const templateIds = templates.map((t) => t.id)
+        const { data: geradas } = await supabase
+          .from('mensalidades_geradas')
+          .select('*, mensalidades_templates(valor)')
+          .in('template_id', templateIds)
+          .order('data_vencimento', { ascending: false })
+
+        if (geradas) {
+          setMensalidades(geradas)
+        }
+      }
+      setIsLoading(false)
+    }
+
+    loadData()
+  }, [user])
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value)
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
   }
 
-  const handleConfirmPayment = () => {
+  const formatDate = (dateStr: string) => {
+    try {
+      if (dateStr.length === 10) {
+        const [year, month, day] = dateStr.split('-')
+        return `${day}/${month}/${year}`
+      }
+      return format(parseISO(dateStr), 'dd/MM/yyyy')
+    } catch {
+      return dateStr
+    }
+  }
+
+  const pendingPayments = mensalidades.filter(
+    (m) => m.status === 'pendente' || m.status === 'atrasado',
+  )
+  const sortedPending = pendingPayments.sort(
+    (a, b) => new Date(a.data_vencimento).getTime() - new Date(b.data_vencimento).getTime(),
+  )
+  const nextPayment = sortedPending[0]
+  const paymentHistory = mensalidades.filter((m) => m.status === 'pago')
+
+  const handleConfirmPayment = async () => {
+    if (!nextPayment) return
     setIsPaymentDialogOpen(false)
-    toast.success('Pagamento confirmado com sucesso!', {
-      description: 'O comprovante foi enviado para o seu e-mail.',
-      icon: <CheckCircle className="h-5 w-5 text-emerald-500" />,
-    })
+
+    const currentDate = new Date().toISOString().split('T')[0]
+    const { error } = await supabase
+      .from('mensalidades_geradas')
+      .update({ status: 'pago', data_pagamento: currentDate })
+      .eq('id', nextPayment.id)
+
+    if (!error) {
+      toast.success('Pagamento confirmado com sucesso!', {
+        description: 'O comprovante foi enviado para o seu e-mail.',
+        icon: <CheckCircle className="h-5 w-5 text-emerald-500" />,
+      })
+      setMensalidades((prev) =>
+        prev.map((m) =>
+          m.id === nextPayment.id ? { ...m, status: 'pago', data_pagamento: currentDate } : m,
+        ),
+      )
+    } else {
+      toast.error('Erro ao confirmar pagamento.')
+    }
   }
 
   const getStatusBadge = (status: PaymentStatus) => {
@@ -89,8 +154,22 @@ export default function DashboardAluno() {
             <AlertCircle className="w-3 h-3 mr-1" /> Atrasado
           </Badge>
         )
+      default:
+        return null
     }
   }
+
+  if (isLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  const nextPaymentAmount = nextPayment?.mensalidades_templates?.valor || 0
+  const nextPaymentDate = nextPayment ? formatDate(nextPayment.data_vencimento) : '-'
+  const nextPaymentStatus = (nextPayment?.status as PaymentStatus) || 'pendente'
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8 animate-fade-in-up">
@@ -108,9 +187,10 @@ export default function DashboardAluno() {
             <User className="h-4 w-4 text-slate-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-900">{studentData.name}</div>
+            <div className="text-2xl font-bold text-slate-900">{alunoData?.nome || 'Aluno'}</div>
             <p className="text-sm text-slate-500 mt-1 flex items-center gap-1">
-              <Calendar className="w-3 h-3" /> {studentData.turma}
+              <Calendar className="w-3 h-3" />{' '}
+              {(alunoData?.turmas as any)?.nome_turma || 'Sem Turma'}
             </p>
           </CardContent>
         </Card>
@@ -122,13 +202,13 @@ export default function DashboardAluno() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-slate-900">
-              {formatCurrency(studentData.nextPayment.amount)}
+              {nextPayment ? formatCurrency(nextPaymentAmount) : '-'}
             </div>
             <div className="flex items-center justify-between mt-2">
               <span className="text-sm text-slate-600">
-                Vence em: <span className="font-semibold">{studentData.nextPayment.dueDate}</span>
+                Vence em: <span className="font-semibold">{nextPaymentDate}</span>
               </span>
-              {getStatusBadge(studentData.nextPayment.status)}
+              {nextPayment && getStatusBadge(nextPaymentStatus)}
             </div>
           </CardContent>
         </Card>
@@ -137,7 +217,7 @@ export default function DashboardAluno() {
           <CardContent className="pt-6">
             <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="w-full h-14 text-lg" size="lg">
+                <Button className="w-full h-14 text-lg" size="lg" disabled={!nextPayment}>
                   <CreditCard className="mr-2 h-5 w-5" />
                   Confirmar Pagamento
                 </Button>
@@ -149,22 +229,22 @@ export default function DashboardAluno() {
                     Revise os detalhes da sua próxima mensalidade antes de confirmar.
                   </DialogDescription>
                 </DialogHeader>
-                <div className="bg-slate-50 p-4 rounded-lg border space-y-3 my-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-slate-500">Valor a pagar:</span>
-                    <span className="font-bold text-lg">
-                      {formatCurrency(studentData.nextPayment.amount)}
-                    </span>
+                {nextPayment && (
+                  <div className="bg-slate-50 p-4 rounded-lg border space-y-3 my-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-slate-500">Valor a pagar:</span>
+                      <span className="font-bold text-lg">{formatCurrency(nextPaymentAmount)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-slate-500">Vencimento:</span>
+                      <span className="font-medium">{nextPaymentDate}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-slate-500">Beneficiário:</span>
+                      <span className="font-medium">EduTech Instituição de Ensino</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-slate-500">Vencimento:</span>
-                    <span className="font-medium">{studentData.nextPayment.dueDate}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-slate-500">Beneficiário:</span>
-                    <span className="font-medium">EduTech Instituição de Ensino</span>
-                  </div>
-                </div>
+                )}
                 <DialogFooter className="sm:justify-end gap-2">
                   <Button variant="outline" onClick={() => setIsPaymentDialogOpen(false)}>
                     Cancelar
@@ -197,13 +277,25 @@ export default function DashboardAluno() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paymentHistory.map((payment) => (
-                <TableRow key={payment.id}>
-                  <TableCell className="font-medium">{payment.date}</TableCell>
-                  <TableCell className="text-slate-600">{formatCurrency(payment.amount)}</TableCell>
-                  <TableCell>{getStatusBadge(payment.status)}</TableCell>
+              {paymentHistory.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center text-slate-500 h-24">
+                    Nenhum pagamento encontrado.
+                  </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                paymentHistory.map((payment) => (
+                  <TableRow key={payment.id}>
+                    <TableCell className="font-medium">
+                      {formatDate(payment.data_vencimento)}
+                    </TableCell>
+                    <TableCell className="text-slate-600">
+                      {formatCurrency(payment.mensalidades_templates?.valor || 0)}
+                    </TableCell>
+                    <TableCell>{getStatusBadge(payment.status as PaymentStatus)}</TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

@@ -5,6 +5,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import Index from './pages/Index'
 import Financeiro from './pages/Financeiro'
 import DashboardAluno from './pages/DashboardAluno'
+import Turmas from './pages/Turmas'
 import NotFound from './pages/NotFound'
 import Layout from './components/Layout'
 import Login from './pages/Login'
@@ -24,6 +25,7 @@ const App = () => (
 
             <Route element={<ProtectedRoute allowedRoles={['financeiro']} />}>
               <Route path="/financeiro" element={<Financeiro />} />
+              <Route path="/turmas" element={<Turmas />} />
             </Route>
 
             <Route element={<ProtectedRoute allowedRoles={['aluno']} />}>
