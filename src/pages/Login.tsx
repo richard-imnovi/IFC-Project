@@ -41,12 +41,18 @@ export default function Login() {
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setIsSubmitting(true)
 
-    const { data, error } = await signIn(values.email, values.password)
+    const { data, error } = await signIn(values.email.trim(), values.password)
 
     if (error) {
-      toast.error(
-        error.message === 'Invalid login credentials' ? 'Credenciais inválidas' : error.message,
-      )
+      if (error.message.includes('Email not confirmed')) {
+        toast.error('Por favor, confirme seu e-mail antes de fazer login.')
+      } else {
+        toast.error(
+          error.message === 'Invalid login credentials'
+            ? 'E-mail ou senha incorretos'
+            : error.message,
+        )
+      }
       setIsSubmitting(false)
       return
     }
@@ -56,7 +62,7 @@ export default function Login() {
         .from('users')
         .select('tipo_acesso')
         .eq('id', data.user.id)
-        .single()
+        .maybeSingle()
 
       toast.success('Login realizado com sucesso!')
 
