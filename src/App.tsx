@@ -9,6 +9,8 @@ import Turmas from './pages/Turmas'
 import NotFound from './pages/NotFound'
 import Layout from './components/Layout'
 import Login from './pages/Login'
+import EsqueciSenha from './pages/EsqueciSenha'
+import RedefinirSenha from './pages/RedefinirSenha'
 import { AuthProvider } from './hooks/use-auth'
 import { ProtectedRoute } from './components/ProtectedRoute'
 
@@ -22,6 +24,8 @@ const App = () => (
           <Route element={<Layout />}>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+            <Route path="/redefinir-senha" element={<RedefinirSenha />} />
 
             <Route element={<ProtectedRoute allowedRoles={['financeiro']} />}>
               <Route path="/financeiro" element={<Financeiro />} />
