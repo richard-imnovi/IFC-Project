@@ -22,6 +22,7 @@ import { Loader2, DollarSign, TrendingUp, AlertCircle, Search } from 'lucide-rea
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import { VisaoGeralCharts } from './visao-geral-charts'
 
 export function DashboardVisaoGeral() {
   const [mensalidades, setMensalidades] = useState<any[]>([])
@@ -116,6 +117,9 @@ export function DashboardVisaoGeral() {
   const totalAtrasado = mensalidades
     .filter((m) => m.calculatedStatus === 'atrasado')
     .reduce((acc, curr) => acc + Number(curr.valor), 0)
+  const pendingTotal = mensalidades
+    .filter((m) => m.calculatedStatus === 'em dia' || m.calculatedStatus === 'pendente')
+    .reduce((acc, curr) => acc + Number(curr.valor), 0)
 
   const filteredMensalidades = mensalidades.filter((m) => {
     const matchStatus = filtroStatus === 'todos' || m.calculatedStatus === filtroStatus
@@ -159,6 +163,15 @@ export function DashboardVisaoGeral() {
           </CardContent>
         </Card>
       </div>
+
+      {!loading && mensalidades.length > 0 && (
+        <VisaoGeralCharts
+          totalEsperado={totalEsperado}
+          totalPago={totalPago}
+          totalAtrasado={totalAtrasado}
+          pendingTotal={pendingTotal}
+        />
+      )}
 
       <Card>
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0 pb-6">
