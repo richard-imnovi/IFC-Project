@@ -45,6 +45,7 @@ const formatWhatsApp = (value: string) => {
 
 export default function Index() {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoadingTurmas, setIsLoadingTurmas] = useState(true)
   const [turmas, setTurmas] = useState<{ id: string; nome_turma: string }[]>([])
   const { signUp } = useAuth()
   const navigate = useNavigate()
@@ -55,6 +56,7 @@ export default function Index() {
       .select('id, nome_turma')
       .then(({ data }) => {
         if (data) setTurmas(data)
+        setIsLoadingTurmas(false)
       })
   }, [])
 
@@ -228,15 +230,19 @@ export default function Index() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {turmas.length > 0 ? (
+                          {isLoadingTurmas ? (
+                            <SelectItem value="loading" disabled>
+                              Carregando turmas...
+                            </SelectItem>
+                          ) : turmas.length > 0 ? (
                             turmas.map((t) => (
                               <SelectItem key={t.id} value={t.id}>
                                 {t.nome_turma}
                               </SelectItem>
                             ))
                           ) : (
-                            <SelectItem value="loading" disabled>
-                              Carregando turmas...
+                            <SelectItem value="empty" disabled>
+                              Nenhuma turma disponível
                             </SelectItem>
                           )}
                         </SelectContent>
