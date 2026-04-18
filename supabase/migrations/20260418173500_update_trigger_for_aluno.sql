@@ -56,4 +56,4 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
   RETURN NEW;
 END;
-$function$
+$function$;
