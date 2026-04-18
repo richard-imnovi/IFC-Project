@@ -23,6 +23,7 @@ export function TemplateTable({ templates, loading, onEdit, onDelete }: any) {
       <TableHeader>
         <TableRow>
           <TableHead>Aluno</TableHead>
+          <TableHead>Turma</TableHead>
           <TableHead>Valor</TableHead>
           <TableHead>Venc.</TableHead>
           <TableHead>Status</TableHead>
@@ -32,14 +33,17 @@ export function TemplateTable({ templates, loading, onEdit, onDelete }: any) {
       <TableBody>
         {templates.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-              Nenhum template cadastrado.
+            <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+              Nenhum template cadastrado para este filtro.
             </TableCell>
           </TableRow>
         ) : (
           templates.map((t: any) => (
             <TableRow key={t.id}>
               <TableCell className="font-medium text-slate-700">{t.alunos?.nome}</TableCell>
+              <TableCell className="text-slate-600">
+                {t.alunos?.turmas?.nome_turma || 'Sem turma'}
+              </TableCell>
               <TableCell>R$ {Number(t.valor).toFixed(2)}</TableCell>
               <TableCell>Dia {t.dia_vencimento}</TableCell>
               <TableCell className="capitalize text-slate-600">{t.alunos?.status_curso}</TableCell>
