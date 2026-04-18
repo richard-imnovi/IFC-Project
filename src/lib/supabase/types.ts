@@ -1,11 +1,17 @@
 // AVOID UPDATING THIS FILE DIRECTLY. It is automatically generated.
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '14.5'
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -39,18 +45,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'alunos_turma_fkey'
-            columns: ['turma']
+            foreignKeyName: "alunos_turma_fkey"
+            columns: ["turma"]
             isOneToOne: false
-            referencedRelation: 'turmas'
-            referencedColumns: ['id']
+            referencedRelation: "turmas"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'alunos_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "alunos_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -84,11 +90,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'mensalidades_geradas_template_id_fkey'
-            columns: ['template_id']
+            foreignKeyName: "mensalidades_geradas_template_id_fkey"
+            columns: ["template_id"]
             isOneToOne: false
-            referencedRelation: 'mensalidades_templates'
-            referencedColumns: ['id']
+            referencedRelation: "mensalidades_templates"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -119,11 +125,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'mensalidades_templates_aluno_id_fkey'
-            columns: ['aluno_id']
+            foreignKeyName: "mensalidades_templates_aluno_id_fkey"
+            columns: ["aluno_id"]
             isOneToOne: false
-            referencedRelation: 'alunos'
-            referencedColumns: ['id']
+            referencedRelation: "alunos"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -151,11 +157,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'pagamentos_confirmados_mensalidade_id_fkey'
-            columns: ['mensalidade_id']
+            foreignKeyName: "pagamentos_confirmados_mensalidade_id_fkey"
+            columns: ["mensalidade_id"]
             isOneToOne: false
-            referencedRelation: 'mensalidades_geradas'
-            referencedColumns: ['id']
+            referencedRelation: "mensalidades_geradas"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -220,31 +226,33 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -253,23 +261,23 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -278,23 +286,23 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -303,36 +311,36 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema['Enums']
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema['CompositeTypes']
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
@@ -340,6 +348,7 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
 
 // ====== DATABASE EXTENDED CONTEXT (auto-generated) ======
 // This section contains actual PostgreSQL column types, constraints, RLS policies,
@@ -489,7 +498,7 @@ export const Constants = {
 //     RETURN NEW;
 //   END;
 //   $function$
-//
+//   
 // FUNCTION handle_new_user()
 //   CREATE OR REPLACE FUNCTION public.handle_new_user()
 //    RETURNS trigger
@@ -505,15 +514,15 @@ export const Constants = {
 //     v_template_id uuid;
 //   BEGIN
 //     v_tipo_acesso := COALESCE(NEW.raw_user_meta_data->>'tipo_acesso', 'aluno');
-//
+//     
 //     INSERT INTO public.users (id, email, tipo_acesso)
 //     VALUES (NEW.id, NEW.email, v_tipo_acesso)
 //     ON CONFLICT (id) DO NOTHING;
-//
+//   
 //     IF v_tipo_acesso = 'aluno' THEN
 //       v_nome := COALESCE(NEW.raw_user_meta_data->>'nome', 'Aluno Sem Nome');
 //       v_whatsapp := NEW.raw_user_meta_data->>'whatsapp';
-//
+//       
 //       BEGIN
 //         IF NEW.raw_user_meta_data->>'turma' IS NOT NULL AND NEW.raw_user_meta_data->>'turma' != '' THEN
 //           v_turma := (NEW.raw_user_meta_data->>'turma')::uuid;
@@ -527,31 +536,32 @@ export const Constants = {
 //       EXCEPTION WHEN OTHERS THEN
 //         v_turma := NULL;
 //       END;
-//
+//   
 //       INSERT INTO public.alunos (user_id, nome, whatsapp, turma, status_curso)
 //       VALUES (NEW.id, v_nome, v_whatsapp, v_turma, 'ativo')
 //       RETURNING id INTO v_aluno_id;
-//
+//   
 //       -- Create dummy data to avoid empty states and show the app working
 //       INSERT INTO public.mensalidades_templates (aluno_id, valor, dia_vencimento, status_template)
 //       VALUES (v_aluno_id, 450.00, 10, 'ativo')
 //       RETURNING id INTO v_template_id;
-//
+//   
 //       INSERT INTO public.mensalidades_geradas (template_id, mes_referencia, data_vencimento, data_pagamento, status)
-//       VALUES
+//       VALUES 
 //         (v_template_id, to_char(CURRENT_DATE, 'MM/YYYY'), CURRENT_DATE, NULL, 'pendente'),
 //         (v_template_id, to_char(CURRENT_DATE - INTERVAL '1 month', 'MM/YYYY'), (CURRENT_DATE - INTERVAL '1 month')::date, (CURRENT_DATE - INTERVAL '1 month' - INTERVAL '1 day')::date, 'pago'),
 //         (v_template_id, to_char(CURRENT_DATE - INTERVAL '2 months', 'MM/YYYY'), (CURRENT_DATE - INTERVAL '2 months')::date, (CURRENT_DATE - INTERVAL '2 months' - INTERVAL '5 days')::date, 'pago');
 //     END IF;
-//
+//   
 //     RETURN NEW;
 //   EXCEPTION WHEN OTHERS THEN
 //     -- Prevents the transaction from aborting so the user is still created in auth.users
 //     RETURN NEW;
 //   END;
 //   $function$
-//
+//   
 
 // --- INDEXES ---
 // Table: users
 //   CREATE UNIQUE INDEX users_email_key ON public.users USING btree (email)
+
