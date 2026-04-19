@@ -1,11 +1,17 @@
 // AVOID UPDATING THIS FILE DIRECTLY. It is automatically generated.
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '14.5'
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -39,18 +45,83 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'alunos_turma_fkey'
-            columns: ['turma']
+            foreignKeyName: "alunos_turma_fkey"
+            columns: ["turma"]
             isOneToOne: false
-            referencedRelation: 'turmas'
-            referencedColumns: ['id']
+            referencedRelation: "turmas"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'alunos_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "alunos_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      configuracoes_mensagens: {
+        Row: {
+          created_at: string
+          id: string
+          texto: string
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          texto: string
+          tipo: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          texto?: string
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      logs_mensagens: {
+        Row: {
+          aluno_nome: string
+          created_at: string
+          erro: string | null
+          id: string
+          mensalidade_id: string | null
+          status: string
+          tipo_mensagem: string
+          whatsapp: string
+        }
+        Insert: {
+          aluno_nome: string
+          created_at?: string
+          erro?: string | null
+          id?: string
+          mensalidade_id?: string | null
+          status: string
+          tipo_mensagem: string
+          whatsapp: string
+        }
+        Update: {
+          aluno_nome?: string
+          created_at?: string
+          erro?: string | null
+          id?: string
+          mensalidade_id?: string | null
+          status?: string
+          tipo_mensagem?: string
+          whatsapp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "logs_mensagens_mensalidade_id_fkey"
+            columns: ["mensalidade_id"]
+            isOneToOne: false
+            referencedRelation: "mensalidades_geradas"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -84,11 +155,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'mensalidades_geradas_template_id_fkey'
-            columns: ['template_id']
+            foreignKeyName: "mensalidades_geradas_template_id_fkey"
+            columns: ["template_id"]
             isOneToOne: false
-            referencedRelation: 'mensalidades_templates'
-            referencedColumns: ['id']
+            referencedRelation: "mensalidades_templates"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -119,11 +190,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'mensalidades_templates_aluno_id_fkey'
-            columns: ['aluno_id']
+            foreignKeyName: "mensalidades_templates_aluno_id_fkey"
+            columns: ["aluno_id"]
             isOneToOne: false
-            referencedRelation: 'alunos'
-            referencedColumns: ['id']
+            referencedRelation: "alunos"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -151,11 +222,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'pagamentos_confirmados_mensalidade_id_fkey'
-            columns: ['mensalidade_id']
+            foreignKeyName: "pagamentos_confirmados_mensalidade_id_fkey"
+            columns: ["mensalidade_id"]
             isOneToOne: false
-            referencedRelation: 'mensalidades_geradas'
-            referencedColumns: ['id']
+            referencedRelation: "mensalidades_geradas"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -220,31 +291,33 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -253,23 +326,23 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -278,23 +351,23 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -303,36 +376,36 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema['Enums']
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema['CompositeTypes']
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
@@ -340,6 +413,7 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
 
 // ====== DATABASE EXTENDED CONTEXT (auto-generated) ======
 // This section contains actual PostgreSQL column types, constraints, RLS policies,
@@ -358,6 +432,21 @@ export const Constants = {
 //   whatsapp: text (nullable)
 //   turma: uuid (nullable)
 //   status_curso: text (not null, default: 'ativo'::text)
+//   created_at: timestamp with time zone (not null, default: now())
+// Table: configuracoes_mensagens
+//   id: uuid (not null, default: gen_random_uuid())
+//   tipo: text (not null)
+//   texto: text (not null)
+//   created_at: timestamp with time zone (not null, default: now())
+//   updated_at: timestamp with time zone (not null, default: now())
+// Table: logs_mensagens
+//   id: uuid (not null, default: gen_random_uuid())
+//   mensalidade_id: uuid (nullable)
+//   aluno_nome: text (not null)
+//   whatsapp: text (not null)
+//   tipo_mensagem: text (not null)
+//   status: text (not null)
+//   erro: text (nullable)
 //   created_at: timestamp with time zone (not null, default: now())
 // Table: mensalidades_geradas
 //   id: uuid (not null, default: gen_random_uuid())
@@ -398,6 +487,12 @@ export const Constants = {
 //   CHECK alunos_status_curso_check: CHECK ((status_curso = ANY (ARRAY['ativo'::text, 'concluído'::text, 'cancelado'::text, 'suspenso'::text])))
 //   FOREIGN KEY alunos_turma_fkey: FOREIGN KEY (turma) REFERENCES turmas(id) ON DELETE SET NULL
 //   FOREIGN KEY alunos_user_id_fkey: FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+// Table: configuracoes_mensagens
+//   PRIMARY KEY configuracoes_mensagens_pkey: PRIMARY KEY (id)
+//   UNIQUE configuracoes_mensagens_tipo_key: UNIQUE (tipo)
+// Table: logs_mensagens
+//   FOREIGN KEY logs_mensagens_mensalidade_id_fkey: FOREIGN KEY (mensalidade_id) REFERENCES mensalidades_geradas(id) ON DELETE CASCADE
+//   PRIMARY KEY logs_mensagens_pkey: PRIMARY KEY (id)
 // Table: mensalidades_geradas
 //   PRIMARY KEY mensalidades_geradas_pkey: PRIMARY KEY (id)
 //   CHECK mensalidades_geradas_status_check: CHECK ((status = ANY (ARRAY['pendente'::text, 'pago'::text, 'atrasado'::text])))
@@ -429,6 +524,14 @@ export const Constants = {
 //     USING: true
 //   Policy "authenticated_update_alunos" (UPDATE, PERMISSIVE) roles={authenticated}
 //     USING: true
+// Table: configuracoes_mensagens
+//   Policy "authenticated_all_configuracoes_mensagens" (ALL, PERMISSIVE) roles={authenticated}
+//     USING: true
+//     WITH CHECK: true
+// Table: logs_mensagens
+//   Policy "authenticated_all_logs_mensagens" (ALL, PERMISSIVE) roles={authenticated}
+//     USING: true
+//     WITH CHECK: true
 // Table: mensalidades_geradas
 //   Policy "authenticated_delete_mensalidades_geradas" (DELETE, PERMISSIVE) roles={authenticated}
 //     USING: true
@@ -489,7 +592,7 @@ export const Constants = {
 //     RETURN NEW;
 //   END;
 //   $function$
-//
+//   
 // FUNCTION handle_new_user()
 //   CREATE OR REPLACE FUNCTION public.handle_new_user()
 //    RETURNS trigger
@@ -507,17 +610,17 @@ export const Constants = {
 //     v_dia_vencimento integer;
 //   BEGIN
 //     v_tipo_acesso := COALESCE(NEW.raw_user_meta_data->>'tipo_acesso', 'aluno');
-//
+//     
 //     INSERT INTO public.users (id, email, tipo_acesso)
 //     VALUES (NEW.id, NEW.email, v_tipo_acesso)
 //     ON CONFLICT (id) DO NOTHING;
-//
+//   
 //     IF v_tipo_acesso = 'aluno' THEN
 //       v_nome := COALESCE(NEW.raw_user_meta_data->>'nome', 'Aluno Sem Nome');
 //       v_whatsapp := NEW.raw_user_meta_data->>'whatsapp';
 //       v_valor := COALESCE((NEW.raw_user_meta_data->>'valor')::numeric, 450.00);
 //       v_dia_vencimento := COALESCE((NEW.raw_user_meta_data->>'dia_vencimento')::integer, 10);
-//
+//       
 //       BEGIN
 //         IF NEW.raw_user_meta_data->>'turma' IS NOT NULL AND NEW.raw_user_meta_data->>'turma' != '' AND NEW.raw_user_meta_data->>'turma' != 'none' THEN
 //           v_turma := (NEW.raw_user_meta_data->>'turma')::uuid;
@@ -531,27 +634,30 @@ export const Constants = {
 //       EXCEPTION WHEN OTHERS THEN
 //         v_turma := NULL;
 //       END;
-//
+//   
 //       INSERT INTO public.alunos (user_id, nome, whatsapp, turma, status_curso)
 //       VALUES (NEW.id, v_nome, v_whatsapp, v_turma, 'ativo')
 //       RETURNING id INTO v_aluno_id;
-//
+//   
 //       INSERT INTO public.mensalidades_templates (aluno_id, valor, dia_vencimento, status_template)
 //       VALUES (v_aluno_id, v_valor, v_dia_vencimento, 'ativo')
 //       RETURNING id INTO v_template_id;
-//
+//   
 //       INSERT INTO public.mensalidades_geradas (template_id, mes_referencia, data_vencimento, data_pagamento, status)
-//       VALUES
+//       VALUES 
 //         (v_template_id, to_char(CURRENT_DATE, 'MM/YYYY'), CURRENT_DATE, NULL, 'pendente');
 //     END IF;
-//
+//   
 //     RETURN NEW;
 //   EXCEPTION WHEN OTHERS THEN
 //     RETURN NEW;
 //   END;
 //   $function$
-//
+//   
 
 // --- INDEXES ---
+// Table: configuracoes_mensagens
+//   CREATE UNIQUE INDEX configuracoes_mensagens_tipo_key ON public.configuracoes_mensagens USING btree (tipo)
 // Table: users
 //   CREATE UNIQUE INDEX users_email_key ON public.users USING btree (email)
+
