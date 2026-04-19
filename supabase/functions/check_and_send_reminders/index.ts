@@ -4,8 +4,7 @@ import { createClient } from 'jsr:@supabase/supabase-js@2'
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, x-supabase-client-platform, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, x-supabase-client-platform, apikey, content-type',
 }
 
 Deno.serve(async (req: Request) => {
@@ -50,13 +49,10 @@ Deno.serve(async (req: Request) => {
     }
 
     if (!mensalidades || mensalidades.length === 0) {
-      return new Response(
-        JSON.stringify({ message: 'Nenhuma mensalidade pendente encontrada', sentCount: 0 }),
-        {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200,
-        },
-      )
+      return new Response(JSON.stringify({ message: 'Nenhuma mensalidade pendente encontrada', sentCount: 0 }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      })
     }
 
     const now = new Date()
@@ -67,20 +63,22 @@ Deno.serve(async (req: Request) => {
 
     for (const mensalidade of mensalidades) {
       if (!mensalidade.data_vencimento) continue
-
+      
       const [year, month, day] = mensalidade.data_vencimento.split('-')
       const vencimento = new Date(Number(year), Number(month) - 1, Number(day))
 
       const diffTime = vencimento.getTime() - today.getTime()
       const diffDays = Math.round(diffTime / (1000 * 3600 * 24))
 
-      const templates = Array.isArray(mensalidade.mensalidades_templates)
-        ? mensalidade.mensalidades_templates[0]
+      const templates = Array.isArray(mensalidade.mensalidades_templates) 
+        ? mensalidade.mensalidades_templates[0] 
         : mensalidade.mensalidades_templates
-
+        
       if (!templates) continue
 
-      const alunos = Array.isArray(templates.alunos) ? templates.alunos[0] : templates.alunos
+      const alunos = Array.isArray(templates.alunos) 
+        ? templates.alunos[0] 
+        : templates.alunos
 
       if (!alunos || !alunos.whatsapp) continue
 
@@ -92,10 +90,7 @@ Deno.serve(async (req: Request) => {
       let message_text = null
 
       const dataVencimentoFormatada = `${day}/${month}/${year}`
-      const valorFormatado = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-      }).format(valor)
+      const valorFormatado = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor)
 
       // 2. Check if it's 3 days before or due today
       if (diffDays === 3) {
@@ -111,8 +106,8 @@ Deno.serve(async (req: Request) => {
           body: {
             phone_number: whatsapp,
             message_text: message_text,
-            message_type: message_type,
-          },
+            message_type: message_type
+          }
         })
 
         if (invokeError) {
@@ -124,29 +119,24 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: 'Verificação e envio de lembretes concluídos',
-        sentCount,
-        errors: errors.length > 0 ? errors : undefined,
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      },
-    )
+    return new Response(JSON.stringify({ 
+      success: true, 
+      message: 'Verificação e envio de lembretes concluídos',
+      sentCount, 
+      errors: errors.length > 0 ? errors : undefined 
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200,
+    })
+
   } catch (error: any) {
     console.error('Function Error:', error.message)
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: error.message,
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      },
-    )
+    return new Response(JSON.stringify({
+      success: false,
+      error: error.message
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 400,
+    })
   }
 })
