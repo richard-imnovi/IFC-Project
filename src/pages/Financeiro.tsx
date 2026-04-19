@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
-import { BookOpen, DollarSign, LayoutDashboard } from 'lucide-react'
+import { BookOpen, DollarSign, LayoutDashboard, MessageSquare } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DashboardVisaoGeral } from '@/components/financeiro/dashboard-visao-geral'
 import { TemplatesMensalidade } from '@/components/financeiro/templates-mensalidade'
+import { Comunicacoes } from '@/components/financeiro/comunicacoes'
 
 export default function Financeiro() {
   return (
@@ -34,6 +35,12 @@ export default function Financeiro() {
           >
             <DollarSign className="w-4 h-4" /> Mensalidades
           </TabsTrigger>
+          <TabsTrigger
+            value="comunicacoes"
+            className="flex items-center gap-2 px-6 flex-1 sm:flex-none"
+          >
+            <MessageSquare className="w-4 h-4" /> Comunicações
+          </TabsTrigger>
         </TabsList>
         <TabsContent
           value="visao-geral"
@@ -46,6 +53,12 @@ export default function Financeiro() {
           className="focus-visible:outline-none focus-visible:ring-0"
         >
           <TemplatesMensalidade />
+        </TabsContent>
+        <TabsContent
+          value="comunicacoes"
+          className="focus-visible:outline-none focus-visible:ring-0"
+        >
+          <Comunicacoes />
         </TabsContent>
       </Tabs>
     </div>

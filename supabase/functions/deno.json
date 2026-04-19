@@ -3,6 +3,6 @@
     "create-user": 2,
     "generate_monthly_mensalidades": 2,
     "send_whatsapp_message": 2,
-    "check_and_send_reminders": 1
+    "check_and_send_reminders": 2
   }
 }

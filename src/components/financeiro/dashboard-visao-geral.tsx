@@ -50,6 +50,12 @@ export function DashboardVisaoGeral() {
               nome_turma
             )
           )
+        ),
+        logs_mensagens (
+          id,
+          tipo_mensagem,
+          status,
+          created_at
         )
       `)
       .eq('mes_referencia', currentMonthStr)
@@ -78,12 +84,21 @@ export function DashboardVisaoGeral() {
         const aluno = template?.alunos
         const turma = aluno?.turmas
 
+        const sortedLogs =
+          m.logs_mensagens && Array.isArray(m.logs_mensagens)
+            ? m.logs_mensagens.sort(
+                (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+              )
+            : []
+        const lastLog = sortedLogs[0]
+
         return {
           ...m,
           calculatedStatus,
           valor: template?.valor || 0,
           alunoNome: aluno?.nome || 'Desconhecido',
           turmaNome: turma?.nome_turma || 'Sem Turma',
+          lastLog,
         }
       })
       setMensalidades(processed)
@@ -215,19 +230,20 @@ export function DashboardVisaoGeral() {
                 <TableHead>Turma</TableHead>
                 <TableHead>Valor</TableHead>
                 <TableHead>Vencimento</TableHead>
+                <TableHead>Último Aviso</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
+                  <TableCell colSpan={6} className="h-24 text-center">
                     <Loader2 className="w-6 h-6 animate-spin mx-auto text-primary" />
                   </TableCell>
                 </TableRow>
               ) : filteredMensalidades.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                  <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                     Nenhuma mensalidade encontrada para os filtros aplicados.
                   </TableCell>
                 </TableRow>
@@ -238,6 +254,35 @@ export function DashboardVisaoGeral() {
                     <TableCell className="text-slate-600">{m.turmaNome}</TableCell>
                     <TableCell>R$ {Number(m.valor).toFixed(2)}</TableCell>
                     <TableCell>{format(parseISO(m.data_vencimento), 'dd/MM/yyyy')}</TableCell>
+                    <TableCell>
+                      {m.lastLog ? (
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-xs font-medium">
+                            {m.lastLog.tipo_mensagem === 'lembrete_3_dias'
+                              ? '3 Dias Antes'
+                              : m.lastLog.tipo_mensagem === 'lembrete_vencimento'
+                                ? 'Vencimento'
+                                : 'Outro'}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                            {format(parseISO(m.lastLog.created_at), 'dd/MM HH:mm')}
+                            {m.lastLog.status === 'sucesso' ? (
+                              <div
+                                className="w-1.5 h-1.5 rounded-full bg-emerald-500"
+                                title="Enviado com sucesso"
+                              />
+                            ) : (
+                              <div
+                                className="w-1.5 h-1.5 rounded-full bg-red-500"
+                                title="Falha no envio"
+                              />
+                            )}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <Badge
                         className={cn(
