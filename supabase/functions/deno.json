@@ -1,6 +1,7 @@
 {
   "_versions": {
     "create-user": 1,
-    "generate_monthly_mensalidades": 1
+    "generate_monthly_mensalidades": 1,
+    "send_whatsapp_message": 1
   }
 }
