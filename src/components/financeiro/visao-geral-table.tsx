@@ -9,6 +9,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MessageCircle } from 'lucide-react'
+import { SendMessagesModal } from './send-messages-modal'
 
 export function VisaoGeralTable({ students, onSendMessage }: any) {
   const formatCurrency = (value: number) => {
@@ -55,16 +56,13 @@ export function VisaoGeralTable({ students, onSendMessage }: any) {
               <TableCell className="text-slate-600">{formatCurrency(student.fee)}</TableCell>
               <TableCell className="text-right">
                 {student.status === 'atrasado' && (
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => onSendMessage(student.name)}
-                    className="h-8"
-                  >
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">Enviar Mensagem</span>
-                    <span className="inline sm:hidden">Mensagem</span>
-                  </Button>
+                  <SendMessagesModal preSelectedAluno={student.name}>
+                    <Button variant="secondary" size="sm" className="h-8">
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      <span className="hidden sm:inline">Enviar Mensagem</span>
+                      <span className="inline sm:hidden">Mensagem</span>
+                    </Button>
+                  </SendMessagesModal>
                 )}
               </TableCell>
             </TableRow>

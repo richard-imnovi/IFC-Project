@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DashboardVisaoGeral } from '@/components/financeiro/dashboard-visao-geral'
 import { TemplatesMensalidade } from '@/components/financeiro/templates-mensalidade'
 import { Comunicacoes } from '@/components/financeiro/comunicacoes'
+import { SendMessagesModal } from '@/components/financeiro/send-messages-modal'
 
 export default function Financeiro() {
   return (
@@ -14,11 +15,14 @@ export default function Financeiro() {
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">Dashboard Financeiro</h1>
           <p className="text-slate-600 mt-1">Visão geral e gestão de pagamentos dos alunos.</p>
         </div>
-        <Button asChild variant="outline">
-          <Link to="/turmas">
-            <BookOpen className="w-4 h-4 mr-2" /> Gerenciar Turmas
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <SendMessagesModal />
+          <Button asChild variant="outline">
+            <Link to="/turmas">
+              <BookOpen className="w-4 h-4 mr-2" /> Gerenciar Turmas
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="visao-geral" className="w-full">
