@@ -58,6 +58,10 @@ export default function Index() {
         if (data) setTurmas(data)
         setIsLoadingTurmas(false)
       })
+      .catch((error) => {
+        console.error('Erro ao buscar turmas:', error)
+        setIsLoadingTurmas(false)
+      })
   }, [])
 
   const form = useForm<z.infer<typeof formSchema>>({
