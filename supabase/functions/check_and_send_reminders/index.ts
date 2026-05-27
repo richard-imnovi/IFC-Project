@@ -87,7 +87,12 @@ Deno.serve(async (req: Request) => {
 
       const valor = templates.valor
       const nome = alunos.nome
-      const whatsapp = alunos.whatsapp
+      
+      // Ensure phone numbers are formatted correctly for Evolution API
+      let whatsapp = alunos.whatsapp ? alunos.whatsapp.replace(/\D/g, '') : ''
+      if (whatsapp.length === 10 || whatsapp.length === 11) {
+        whatsapp = `55${whatsapp}`
+      }
 
       let message_type = null
       let message_text = null

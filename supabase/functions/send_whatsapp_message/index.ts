@@ -45,6 +45,11 @@ Deno.serve(async (req: Request) => {
       body: JSON.stringify({
         number: to,
         text: message_text,
+        options: {
+          delay: 1200,
+          presence: 'composing',
+          linkPreview: false
+        }
       }),
     })
 
