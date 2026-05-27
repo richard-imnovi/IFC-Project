@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Mail, Lock, LogIn, Loader2 } from 'lucide-react'
+import { Mail, Lock, LogIn, Loader2, Book } from 'lucide-react'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 
@@ -77,17 +77,19 @@ export default function Login() {
   }
 
   return (
-    <div className="w-full flex justify-center py-12">
+    <div className="w-full flex justify-center py-12 px-4">
       <Card className="w-full max-w-[400px] shadow-elevation border-0 animate-fade-in-up">
-        <CardHeader className="space-y-2 text-center pb-6">
-          <div className="mx-auto bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mb-2">
-            <LogIn className="h-6 w-6 text-primary" />
+        <CardHeader className="space-y-4 text-center pb-6">
+          <div className="flex flex-col items-center justify-center space-y-2">
+            <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mb-2">
+              <Book className="h-8 w-8 text-primary" />
+            </div>
+            <CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+              IFC Piracicaba
+            </CardTitle>
           </div>
-          <CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-            Acessar Sistema
-          </CardTitle>
           <CardDescription className="text-base text-slate-600">
-            Entre com suas credenciais para continuar.
+            Acesse sua conta para continuar
           </CardDescription>
         </CardHeader>
         <CardContent>

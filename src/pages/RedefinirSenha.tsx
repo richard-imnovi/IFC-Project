@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Lock, Loader2, KeyRound } from 'lucide-react'
+import { Lock, Loader2, Book } from 'lucide-react'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 
@@ -21,11 +21,11 @@ import { supabase } from '@/lib/supabase/client'
 
 const resetSchema = z
   .object({
-    password: z.string().min(6, { message: 'A senha deve ter pelo menos 6 caracteres.' }),
+    password: z.string().min(6, { message: 'A senha deve ter no mínimo 6 caracteres.' }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: 'As senhas não coincidem.',
+    message: 'As senhas não coincidem',
     path: ['confirmPassword'],
   })
 
@@ -34,37 +34,23 @@ export default function RedefinirSenha() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Check if user has an active session (set automatically by Supabase via hash in URL)
-    const checkSession = async () => {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession()
-      if (error || !session) {
-        toast.error('Link inválido ou expirado. Por favor, solicite a recuperação novamente.')
-        navigate('/esqueci-senha')
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        toast.error(
+          'Link inválido ou expirado. Por favor, solicite a redefinição de senha novamente.',
+        )
+        navigate('/login')
       }
-    }
-
-    // We delay slightly to allow Supabase to process the URL hash if present
-    const timer = setTimeout(() => {
-      checkSession()
-    }, 500)
-
-    return () => clearTimeout(timer)
+    })
   }, [navigate])
 
   const form = useForm<z.infer<typeof resetSchema>>({
     resolver: zodResolver(resetSchema),
-    defaultValues: {
-      password: '',
-      confirmPassword: '',
-    },
+    defaultValues: { password: '', confirmPassword: '' },
   })
 
   const onSubmit = async (values: z.infer<typeof resetSchema>) => {
     setIsSubmitting(true)
-
     const { error } = await supabase.auth.updateUser({
       password: values.password,
     })
@@ -72,26 +58,28 @@ export default function RedefinirSenha() {
     setIsSubmitting(false)
 
     if (error) {
-      toast.error('Erro ao redefinir senha: ' + error.message)
+      toast.error(error.message)
       return
     }
 
-    toast.success('Senha redefinida com sucesso!')
+    toast.success('Senha atualizada com sucesso!')
     navigate('/login')
   }
 
   return (
     <div className="w-full flex justify-center py-12 px-4">
       <Card className="w-full max-w-[400px] shadow-elevation border-0 animate-fade-in-up">
-        <CardHeader className="space-y-2 text-center pb-6">
-          <div className="mx-auto bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mb-2">
-            <KeyRound className="h-6 w-6 text-primary" />
+        <CardHeader className="space-y-4 text-center pb-6">
+          <div className="flex flex-col items-center justify-center space-y-2">
+            <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mb-2">
+              <Book className="h-8 w-8 text-primary" />
+            </div>
+            <CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+              IFC Piracicaba
+            </CardTitle>
           </div>
-          <CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-            Nova Senha
-          </CardTitle>
           <CardDescription className="text-base text-slate-600">
-            Digite sua nova senha abaixo.
+            Defina sua nova senha
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -146,12 +134,8 @@ export default function RedefinirSenha() {
                 className="w-full h-12 text-base transition-all duration-300"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? (
-                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                ) : (
-                  <KeyRound className="h-5 w-5 mr-2" />
-                )}
-                Redefinir Senha
+                {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
+                Atualizar Senha
               </Button>
             </form>
           </Form>
