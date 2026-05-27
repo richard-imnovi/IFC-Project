@@ -16,9 +16,11 @@ import { format, parseISO } from 'date-fns'
 import { Badge } from '@/components/ui/badge'
 import { Loader2, MessageSquare, Save, History } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Send } from 'lucide-react'
+import { EnvioManual } from './envio-manual'
 
 export function Comunicacoes() {
-  const [activeTab, setActiveTab] = useState('templates')
+  const [activeTab, setActiveTab] = useState('manual')
 
   const [tpl3Dias, setTpl3Dias] = useState('')
   const [tplVencimento, setTplVencimento] = useState('')
@@ -86,13 +88,20 @@ export function Comunicacoes() {
     <div className="space-y-6 animate-fade-in-up">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-4">
+          <TabsTrigger value="manual" className="flex items-center gap-2">
+            <Send className="w-4 h-4" /> Envio Manual
+          </TabsTrigger>
           <TabsTrigger value="templates" className="flex items-center gap-2">
-            <MessageSquare className="w-4 h-4" /> Templates de Mensagem
+            <MessageSquare className="w-4 h-4" /> Templates
           </TabsTrigger>
           <TabsTrigger value="logs" className="flex items-center gap-2">
-            <History className="w-4 h-4" /> Histórico de Envios
+            <History className="w-4 h-4" /> Histórico
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="manual">
+          <EnvioManual />
+        </TabsContent>
 
         <TabsContent value="templates" className="space-y-4">
           <Card>

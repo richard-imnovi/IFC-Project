@@ -47,15 +47,28 @@ export default function Layout() {
             )}
 
             {profile?.tipo_acesso === 'financeiro' && (
-              <Link
-                to="/financeiro"
-                className={cn(
-                  'text-sm font-medium transition-colors hover:text-primary',
-                  location.pathname === '/financeiro' ? 'text-primary' : 'text-muted-foreground',
-                )}
-              >
-                Financeiro
-              </Link>
+              <>
+                <Link
+                  to="/financeiro"
+                  className={cn(
+                    'text-sm font-medium transition-colors hover:text-primary',
+                    location.pathname === '/financeiro' ? 'text-primary' : 'text-muted-foreground',
+                  )}
+                >
+                  Financeiro
+                </Link>
+                <Link
+                  to="/comunicacoes"
+                  className={cn(
+                    'text-sm font-medium transition-colors hover:text-primary',
+                    location.pathname === '/comunicacoes'
+                      ? 'text-primary'
+                      : 'text-muted-foreground',
+                  )}
+                >
+                  Comunicações
+                </Link>
+              </>
             )}
 
             {profile?.tipo_acesso === 'aluno' && (

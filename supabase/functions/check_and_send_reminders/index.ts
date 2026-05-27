@@ -131,7 +131,7 @@ Deno.serve(async (req: Request) => {
         let invokeError: any = null
         try {
           const { data, error: fnError } = await supabase.functions.invoke(
-            'send_whatsapp_message',
+            'send_whatsapp_evolution',
             {
               body: {
                 phone_number: whatsapp,
@@ -142,8 +142,10 @@ Deno.serve(async (req: Request) => {
           )
           if (fnError) {
             invokeError = fnError
+          } else if (data && data.error) {
+            invokeError = new Error(data.error)
           } else if (data && data.success === false) {
-            invokeError = new Error(data.error || 'Unknown error from send_whatsapp_message')
+            invokeError = new Error(data.error || 'Unknown error from send_whatsapp_evolution')
           }
         } catch (e: any) {
           invokeError = e

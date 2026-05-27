@@ -7,6 +7,7 @@ import Index from './pages/Index'
 import Financeiro from './pages/Financeiro'
 import DashboardAluno from './pages/DashboardAluno'
 import Turmas from './pages/Turmas'
+import ComunicacoesPage from './pages/Comunicacoes'
 import NotFound from './pages/NotFound'
 import Layout from './components/Layout'
 import Login from './pages/Login'
@@ -42,6 +43,7 @@ const App = () => {
               <Route element={<ProtectedRoute allowedRoles={['financeiro']} />}>
                 <Route path="/financeiro" element={<Financeiro />} />
                 <Route path="/turmas" element={<Turmas />} />
+                <Route path="/comunicacoes" element={<ComunicacoesPage />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedRoles={['aluno']} />}>
