@@ -84,9 +84,6 @@ export default function Login() {
             <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mb-2">
               <Book className="h-8 w-8 text-primary" />
             </div>
-            <CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-              IFC Piracicaba
-            </CardTitle>
           </div>
           <CardDescription className="text-base text-slate-600">
             Acesse sua conta para continuar
