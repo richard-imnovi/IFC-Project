@@ -183,7 +183,7 @@ export default function Layout() {
               <Menu className="h-6 w-6 text-slate-600" />
             </Button>
             <span className="ml-4 font-semibold text-lg text-slate-900 tracking-tight">
-              EduTech
+              IFC Piracicaba
             </span>
           </header>
           <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">

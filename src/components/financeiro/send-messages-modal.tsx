@@ -221,7 +221,7 @@ export function SendMessagesModal({
           <Button variant="outline" className="gap-2">
             <MessageCircle className="h-4 w-4" />
             <span className="hidden sm:inline">Enviar Mensagem para Atrasados</span>
-            <span className="inline sm:hidden">Cobrar</span>
+            <span className="inline sm:hidden">Cobrar Alunos&nbsp;&nbsp;</span>
           </Button>
         )}
       </DialogTrigger>

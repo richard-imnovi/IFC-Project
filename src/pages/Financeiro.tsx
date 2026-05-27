@@ -21,14 +21,6 @@ export default function Financeiro() {
       </div>
 
       <Tabs defaultValue="visao-geral" className="w-full">
-        <TabsList className="mb-6 h-12 w-full sm:w-auto">
-          <TabsTrigger
-            value="visao-geral"
-            className="flex items-center gap-2 px-6 flex-1 sm:flex-none"
-          >
-            <LayoutDashboard className="w-4 h-4" /> Visão Geral
-          </TabsTrigger>
-        </TabsList>
         <TabsContent
           value="visao-geral"
           className="focus-visible:outline-none focus-visible:ring-0"
