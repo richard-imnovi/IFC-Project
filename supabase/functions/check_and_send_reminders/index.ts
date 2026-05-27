@@ -24,12 +24,10 @@ Deno.serve(async (req: Request) => {
 
     // 1. Fetch custom templates
     const { data: configs } = await supabase.from('configuracoes_mensagens').select('*')
-    const tpl3Dias =
-      configs?.find((c: any) => c.tipo === 'lembrete_3_dias')?.texto ||
+    const tpl3Dias = configs?.find((c: any) => c.tipo === 'lembrete_3_dias')?.texto || 
       'Olá {{nome}}, tudo bem?\n\nEste é um lembrete amigável de que sua mensalidade no valor de {{valor}} vence em 3 dias ({{vencimento}}).\n\nPara realizar o pagamento via PIX, utilize a nossa chave: 12.345.678/0001-90 (CNPJ).\n\nQualquer dúvida, estamos à disposição!'
-
-    const tplVencimento =
-      configs?.find((c: any) => c.tipo === 'lembrete_vencimento')?.texto ||
+      
+    const tplVencimento = configs?.find((c: any) => c.tipo === 'lembrete_vencimento')?.texto || 
       'Olá {{nome}}, tudo bem?\n\nLembramos que sua mensalidade no valor de {{valor}} vence HOJE ({{vencimento}}).\n\nPara realizar o pagamento via PIX, utilize a nossa chave: 12.345.678/0001-90 (CNPJ).\n\nSe já realizou o pagamento, por favor, desconsidere esta mensagem. Obrigado!'
 
     // 2. Fetch all pendente mensalidades
@@ -54,13 +52,10 @@ Deno.serve(async (req: Request) => {
     }
 
     if (!mensalidades || mensalidades.length === 0) {
-      return new Response(
-        JSON.stringify({ message: 'Nenhuma mensalidade pendente encontrada', sentCount: 0 }),
-        {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200,
-        },
-      )
+      return new Response(JSON.stringify({ message: 'Nenhuma mensalidade pendente encontrada', sentCount: 0 }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      })
     }
 
     const now = new Date()
@@ -71,20 +66,22 @@ Deno.serve(async (req: Request) => {
 
     for (const mensalidade of mensalidades) {
       if (!mensalidade.data_vencimento) continue
-
+      
       const [year, month, day] = mensalidade.data_vencimento.split('-')
       const vencimento = new Date(Number(year), Number(month) - 1, Number(day))
 
       const diffTime = vencimento.getTime() - today.getTime()
       const diffDays = Math.round(diffTime / (1000 * 3600 * 24))
 
-      const templates = Array.isArray(mensalidade.mensalidades_templates)
-        ? mensalidade.mensalidades_templates[0]
+      const templates = Array.isArray(mensalidade.mensalidades_templates) 
+        ? mensalidade.mensalidades_templates[0] 
         : mensalidade.mensalidades_templates
-
+        
       if (!templates) continue
 
-      const alunos = Array.isArray(templates.alunos) ? templates.alunos[0] : templates.alunos
+      const alunos = Array.isArray(templates.alunos) 
+        ? templates.alunos[0] 
+        : templates.alunos
 
       if (!alunos || !alunos.whatsapp) continue
 
@@ -96,10 +93,7 @@ Deno.serve(async (req: Request) => {
       let message_text = null
 
       const dataVencimentoFormatada = `${day}/${month}/${year}`
-      const valorFormatado = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-      }).format(valor)
+      const valorFormatado = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor)
 
       // 3. Check if it's 3 days before or due today
       if (diffDays === 3) {
@@ -119,16 +113,13 @@ Deno.serve(async (req: Request) => {
       if (message_type && message_text) {
         let invokeError: any = null
         try {
-          const { data, error: fnError } = await supabase.functions.invoke(
-            'send_whatsapp_message',
-            {
-              body: {
-                phone_number: whatsapp,
-                message_text: message_text,
-                message_type: message_type,
-              },
-            },
-          )
+          const { data, error: fnError } = await supabase.functions.invoke('send_whatsapp_message', {
+            body: {
+              phone_number: whatsapp,
+              message_text: message_text,
+              message_type: message_type
+            }
+          })
           if (fnError) {
             invokeError = fnError
           } else if (data && data.success === false) {
@@ -152,34 +143,29 @@ Deno.serve(async (req: Request) => {
           whatsapp: whatsapp,
           tipo_mensagem: message_type,
           status: invokeError ? 'falha' : 'sucesso',
-          erro: invokeError ? invokeError.message || JSON.stringify(invokeError) : null,
+          erro: invokeError ? (invokeError.message || JSON.stringify(invokeError)) : null
         })
       }
     }
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: 'Verificação e envio de lembretes concluídos',
-        sentCount,
-        errors: errors.length > 0 ? errors : undefined,
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      },
-    )
+    return new Response(JSON.stringify({ 
+      success: true, 
+      message: 'Verificação e envio de lembretes concluídos',
+      sentCount, 
+      errors: errors.length > 0 ? errors : undefined 
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200,
+    })
+
   } catch (error: any) {
     console.error('Function Error:', error.message)
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: error.message,
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      },
-    )
+    return new Response(JSON.stringify({
+      success: false,
+      error: error.message
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 400,
+    })
   }
 })
