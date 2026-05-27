@@ -42,17 +42,30 @@ export function EnvioManual() {
   }, [])
 
   const fetchAlunos = async () => {
-    const { data } = await supabase.from('alunos').select('id, nome, whatsapp').order('nome')
-    if (data) setAlunos(data)
+    try {
+      const { data, error } = await supabase
+        .from('alunos')
+        .select('id, nome, whatsapp')
+        .order('nome')
+      if (error) throw error
+      if (data) setAlunos(data)
+    } catch (error) {
+      console.error('Erro ao buscar alunos:', error)
+    }
   }
 
   const fetchTemplates = async () => {
-    const { data } = await supabase.from('configuracoes_mensagens').select('*')
-    if (data) {
-      const t3 = data.find((d: any) => d.tipo === 'lembrete_3_dias')
-      const tv = data.find((d: any) => d.tipo === 'lembrete_vencimento')
-      if (t3) setTpl3Dias(t3.texto)
-      if (tv) setTplVencimento(tv.texto)
+    try {
+      const { data, error } = await supabase.from('configuracoes_mensagens').select('*')
+      if (error) throw error
+      if (data) {
+        const t3 = data.find((d: any) => d.tipo === 'lembrete_3_dias')
+        const tv = data.find((d: any) => d.tipo === 'lembrete_vencimento')
+        if (t3) setTpl3Dias(t3.texto)
+        if (tv) setTplVencimento(tv.texto)
+      }
+    } catch (error) {
+      console.error('Erro ao buscar templates:', error)
     }
   }
 
@@ -111,13 +124,17 @@ export function EnvioManual() {
       setMessageType('')
       setSelectedAluno('')
     } catch (err: any) {
-      await supabase.from('logs_mensagens').insert({
-        aluno_nome: aluno.nome,
-        whatsapp: aluno.whatsapp,
-        tipo_mensagem: messageType,
-        status: 'falha',
-        erro: err.message,
-      })
+      try {
+        await supabase.from('logs_mensagens').insert({
+          aluno_nome: aluno.nome,
+          whatsapp: aluno.whatsapp,
+          tipo_mensagem: messageType,
+          status: 'falha',
+          erro: err.message,
+        })
+      } catch (logErr) {
+        console.error('Erro ao registrar log de falha:', logErr)
+      }
 
       toast({
         title: 'Falha ao enviar mensagem',

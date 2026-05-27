@@ -19,7 +19,12 @@ import { ProtectedRoute } from './components/ProtectedRoute'
 const App = () => {
   useEffect(() => {
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      if (event.reason?.name === 'AbortError' && event.reason?.message?.includes('steal')) {
+      const msg = event.reason?.message || ''
+      if (
+        (event.reason?.name === 'AbortError' && msg.includes('steal')) ||
+        msg.includes('The operation was aborted due to timeout') ||
+        msg.includes('timeout')
+      ) {
         event.preventDefault()
       }
     }

@@ -39,25 +39,37 @@ export function Comunicacoes() {
 
   const fetchTemplates = async () => {
     setLoadingTpl(true)
-    const { data } = await supabase.from('configuracoes_mensagens').select('*')
-    if (data) {
-      const t3 = data.find((d: any) => d.tipo === 'lembrete_3_dias')
-      const tv = data.find((d: any) => d.tipo === 'lembrete_vencimento')
-      if (t3) setTpl3Dias(t3.texto)
-      if (tv) setTplVencimento(tv.texto)
+    try {
+      const { data, error } = await supabase.from('configuracoes_mensagens').select('*')
+      if (error) throw error
+      if (data) {
+        const t3 = data.find((d: any) => d.tipo === 'lembrete_3_dias')
+        const tv = data.find((d: any) => d.tipo === 'lembrete_vencimento')
+        if (t3) setTpl3Dias(t3.texto)
+        if (tv) setTplVencimento(tv.texto)
+      }
+    } catch (error) {
+      console.error('Erro ao buscar templates:', error)
+    } finally {
+      setLoadingTpl(false)
     }
-    setLoadingTpl(false)
   }
 
   const fetchLogs = async () => {
     setLoadingLogs(true)
-    const { data } = await supabase
-      .from('logs_mensagens')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(50)
-    if (data) setLogs(data)
-    setLoadingLogs(false)
+    try {
+      const { data, error } = await supabase
+        .from('logs_mensagens')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50)
+      if (error) throw error
+      if (data) setLogs(data)
+    } catch (error) {
+      console.error('Erro ao buscar logs:', error)
+    } finally {
+      setLoadingLogs(false)
+    }
   }
 
   const handleSaveTemplates = async () => {
