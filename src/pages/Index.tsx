@@ -32,7 +32,7 @@ const formSchema = z.object({
   email: z.string().email({ message: 'E-mail inválido.' }),
   password: z.string().min(6, { message: 'A senha deve ter no mínimo 6 caracteres.' }),
   whatsapp: z.string().min(15, { message: 'WhatsApp inválido. Preencha corretamente.' }),
-  turma: z.string().min(1, { message: 'Selecione uma turma.' }),
+  turma: z.string().optional(),
 })
 
 const formatWhatsApp = (value: string) => {
@@ -107,13 +107,25 @@ export default function Index() {
       password: values.password,
       nome: values.fullName,
       whatsapp: values.whatsapp,
-      turma: values.turma,
+      turma: values.turma || null,
     })
 
     setIsSubmitting(false)
 
     if (error) {
-      toast.error(error.message || 'Erro ao realizar cadastro')
+      let errorMessage = error.message || 'Erro ao realizar cadastro'
+      if (errorMessage.toLowerCase().includes('already registered')) {
+        errorMessage = 'Este e-mail já está cadastrado. Faça login ou recupere sua senha.'
+      } else if (errorMessage.toLowerCase().includes('password')) {
+        errorMessage = 'A senha informada não é válida. Tente outra senha.'
+      } else if (
+        errorMessage.toLowerCase().includes('fetch') ||
+        errorMessage.toLowerCase().includes('network')
+      ) {
+        errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.'
+      }
+
+      toast.error(errorMessage)
       return
     }
 
@@ -239,7 +251,7 @@ export default function Index() {
                   name="turma"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-slate-600">Turma</FormLabel>
+                      <FormLabel className="text-slate-600">Turma (Opcional)</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -248,10 +260,11 @@ export default function Index() {
                         <FormControl>
                           <SelectTrigger className="h-11 pl-10 relative transition-all duration-300 focus:ring-primary/20 focus:border-primary">
                             <Book className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary" />
-                            <SelectValue placeholder="Selecione" />
+                            <SelectValue placeholder="Selecione a turma (opcional)" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
+                          <SelectItem value="none">Nenhuma turma</SelectItem>
                           {isLoadingTurmas ? (
                             <SelectItem value="loading" disabled>
                               Carregando turmas...

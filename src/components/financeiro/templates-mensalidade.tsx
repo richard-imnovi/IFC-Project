@@ -63,7 +63,7 @@ export function TemplatesMensalidade() {
     <div className="space-y-6 animate-fade-in-up">
       <Card>
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0 pb-6">
-          <CardTitle>Templates Cadastrados</CardTitle>
+          <CardTitle>Alunos Cadastrados</CardTitle>
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <Label
