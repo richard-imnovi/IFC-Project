@@ -16,11 +16,7 @@ export default function Financeiro() {
         </div>
         <div className="flex items-center gap-2">
           <SendMessagesModal />
-          <Button asChild variant="outline">
-            <Link to="/turmas">
-              <BookOpen className="w-4 h-4 mr-2" /> Gerenciar Turmas
-            </Link>
-          </Button>
+          <Button asChild variant="outline"></Button>
         </div>
       </div>
 
@@ -31,12 +27,6 @@ export default function Financeiro() {
             className="flex items-center gap-2 px-6 flex-1 sm:flex-none"
           >
             <LayoutDashboard className="w-4 h-4" /> Visão Geral
-          </TabsTrigger>
-          <TabsTrigger
-            value="comunicacoes"
-            className="flex items-center gap-2 px-6 flex-1 sm:flex-none"
-          >
-            <MessageSquare className="w-4 h-4" /> Comunicações
           </TabsTrigger>
         </TabsList>
         <TabsContent
