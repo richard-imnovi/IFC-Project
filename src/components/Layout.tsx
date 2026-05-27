@@ -227,18 +227,6 @@ export default function Layout() {
               </>
             )}
 
-            {profile?.tipo_acesso === 'aluno' && (
-              <Link
-                to="/aluno"
-                className={cn(
-                  'text-sm font-medium transition-colors hover:text-primary',
-                  location.pathname === '/aluno' ? 'text-primary' : 'text-slate-600',
-                )}
-              >
-                Painel do Aluno
-              </Link>
-            )}
-
             {user && (
               <Button
                 variant="ghost"

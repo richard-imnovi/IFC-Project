@@ -5,7 +5,6 @@ import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import Index from './pages/Index'
 import Financeiro from './pages/Financeiro'
-import DashboardAluno from './pages/DashboardAluno'
 import Turmas from './pages/Turmas'
 import Alunos from './pages/Alunos'
 import Mensalidades from './pages/Mensalidades'
@@ -47,20 +46,18 @@ const App = () => {
               <Route path="/esqueci-senha" element={<EsqueciSenha />} />
               <Route path="/redefinir-senha" element={<RedefinirSenha />} />
 
+              <Route
+                path="/financeiro/mensalidades"
+                element={<Navigate to="/cadastro/mensalidades" replace />}
+              />
+              <Route path="/aluno" element={<Navigate to="/cadastro/alunos" replace />} />
+
               <Route element={<ProtectedRoute allowedRoles={['financeiro']} />}>
                 <Route path="/financeiro" element={<Financeiro />} />
-                <Route
-                  path="/financeiro/mensalidades"
-                  element={<Navigate to="/cadastro/mensalidades" replace />}
-                />
                 <Route path="/cadastro/turmas" element={<Turmas />} />
                 <Route path="/cadastro/alunos" element={<Alunos />} />
                 <Route path="/cadastro/mensalidades" element={<Mensalidades />} />
                 <Route path="/comunicacoes" element={<ComunicacoesPage />} />
-              </Route>
-
-              <Route element={<ProtectedRoute allowedRoles={['aluno']} />}>
-                <Route path="/aluno" element={<DashboardAluno />} />
               </Route>
             </Route>
             <Route path="*" element={<NotFound />} />
