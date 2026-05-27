@@ -3,7 +3,8 @@ import 'jsr:@supabase/functions-js/edge-runtime.d.ts'
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, x-supabase-client-platform, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, x-supabase-client-platform, apikey, content-type',
 }
 
 Deno.serve(async (req: Request) => {
@@ -30,10 +31,10 @@ Deno.serve(async (req: Request) => {
 
     // Format destination number for Evolution API (expecting digits only, with country code)
     let to = phone_number.replace(/\D/g, '')
-    
+
     // Ensure it starts with country code (assume Brazil 55 if length is typical BR mobile 10 or 11)
     if (to.length === 10 || to.length === 11) {
-        to = `55${to}`
+      to = `55${to}`
     }
 
     console.log(`Sending message type: ${message_type || 'default'} to: ${to} via Evolution API`)
@@ -44,7 +45,7 @@ Deno.serve(async (req: Request) => {
     const response = await fetch(evolutionUrl, {
       method: 'POST',
       headers: {
-        'apikey': apiKey,
+        apikey: apiKey,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -52,11 +53,11 @@ Deno.serve(async (req: Request) => {
         options: {
           delay: 1200,
           presence: 'composing',
-          linkPreview: false
+          linkPreview: false,
         },
         textMessage: {
-          text: message_text
-        }
+          text: message_text,
+        },
       }),
     })
 
@@ -64,31 +65,42 @@ Deno.serve(async (req: Request) => {
 
     if (!response.ok) {
       console.error('Evolution API Error:', data)
-      const errorMessage = data?.message || (data?.response && data.response.message) || data?.error || 'Failed to send WhatsApp message via Evolution API'
-      throw new Error(`Evolution API Error: ${typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage)}`)
+      const errorMessage =
+        data?.message ||
+        (data?.response && data.response.message) ||
+        data?.error ||
+        'Failed to send WhatsApp message via Evolution API'
+      throw new Error(
+        `Evolution API Error: ${typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage)}`,
+      )
     }
 
-    return new Response(JSON.stringify({
-      success: true,
-      message: 'WhatsApp message sent successfully',
-      data: {
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: 'WhatsApp message sent successfully',
+        data: {
           status: 'sent',
           type: message_type,
-          response: data
-      }
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
-    })
-
+          response: data,
+        },
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      },
+    )
   } catch (error: any) {
     console.error('Function Error:', error.message)
-    return new Response(JSON.stringify({
-      success: false,
-      error: error.message
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
-    })
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message,
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      },
+    )
   }
 })
