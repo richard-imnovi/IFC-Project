@@ -1,12 +1,6 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts'
 import { createClient } from 'jsr:@supabase/supabase-js@2'
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, x-supabase-client-platform, apikey, content-type',
-}
+import { corsHeaders } from '../_shared/cors.ts'
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -96,7 +90,12 @@ Deno.serve(async (req: Request) => {
 
       const valor = templates.valor
       const nome = alunos.nome
-      const whatsapp = alunos.whatsapp
+
+      // Ensure phone numbers are formatted correctly for Evolution API
+      let whatsapp = alunos.whatsapp ? alunos.whatsapp.replace(/\D/g, '') : ''
+      if (whatsapp.length === 10 || whatsapp.length === 11) {
+        whatsapp = `55${whatsapp}`
+      }
 
       let message_type = null
       let message_text = null
