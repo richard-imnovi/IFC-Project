@@ -58,7 +58,9 @@ export default function Layout() {
         >
           <div className="h-16 flex items-center px-6 border-b shrink-0">
             <BookOpen className="h-6 w-6 text-primary mr-2" />
-            <span className="font-semibold text-lg text-slate-900 tracking-tight">EduTech</span>
+            <span className="font-semibold text-lg text-slate-900 tracking-tight">
+              IFC Piracicaba
+            </span>
             <Button
               variant="ghost"
               size="icon"
@@ -182,9 +184,12 @@ export default function Layout() {
             <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)}>
               <Menu className="h-6 w-6 text-slate-600" />
             </Button>
-            <span className="ml-4 font-semibold text-lg text-slate-900 tracking-tight">
-              IFC Piracicaba
-            </span>
+            <div className="ml-4 flex items-center gap-2">
+              <BookOpen className="h-6 w-6 text-primary" />
+              <span className="font-semibold text-lg text-slate-900 tracking-tight">
+                IFC Piracicaba
+              </span>
+            </div>
           </header>
           <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
             <Outlet />
@@ -201,7 +206,9 @@ export default function Layout() {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <BookOpen className="h-6 w-6 text-primary" />
-            <span className="font-semibold text-lg text-slate-900 tracking-tight">EduTech</span>
+            <span className="font-semibold text-lg text-slate-900 tracking-tight">
+              IFC Piracicaba
+            </span>
           </div>
           <nav className="flex items-center gap-4 sm:gap-6">
             {!user && (
@@ -249,7 +256,7 @@ export default function Layout() {
       <footer className="border-t py-6 bg-white mt-auto">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-600 text-center md:text-left">
-            &copy; {new Date().getFullYear()} EduTech. Todos os direitos reservados.
+            &copy; {new Date().getFullYear()} IFC Piracicaba. Todos os direitos reservados.
           </p>
           <div className="text-sm text-slate-600 flex justify-center gap-6">
             <a href="#" className="hover:text-primary transition-colors">
