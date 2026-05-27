@@ -1,11 +1,5 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts'
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, x-supabase-client-platform, apikey, content-type',
-}
+import { corsHeaders } from '../_shared/cors.ts'
 
 Deno.serve(async (req: Request) => {
   // Handle CORS
@@ -58,8 +52,13 @@ Deno.serve(async (req: Request) => {
 
     if (!response.ok) {
       console.error('Evolution API Error:', data)
+      const errorMessage =
+        data?.message ||
+        (data?.response && data.response.message) ||
+        data?.error ||
+        'Failed to send WhatsApp message via Evolution API'
       throw new Error(
-        data?.message || data?.error || 'Failed to send WhatsApp message via Evolution API',
+        `Evolution API Error: ${typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage)}`,
       )
     }
 

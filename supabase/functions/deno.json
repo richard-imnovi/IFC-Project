@@ -2,7 +2,7 @@
   "_versions": {
     "create-user": 12,
     "generate_monthly_mensalidades": 12,
-    "send_whatsapp_message": 13,
-    "check_and_send_reminders": 13
+    "send_whatsapp_message": 14,
+    "check_and_send_reminders": 14
   }
 }
