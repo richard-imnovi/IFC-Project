@@ -204,33 +204,23 @@ export default function Layout() {
     <div className="flex flex-col min-h-screen bg-slate-50 font-sans">
       <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <BookOpen className="h-6 w-6 text-primary" />
-            <span className="font-semibold text-lg text-slate-900 tracking-tight">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="bg-primary/10 p-2 rounded-md">
+              <BookOpen className="h-5 w-5 text-primary" />
+            </div>
+            <span className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
               IFC Piracicaba
             </span>
           </div>
-          <nav className="flex items-center gap-4 sm:gap-6">
+          <nav className="flex items-center gap-2 sm:gap-4">
             {!user && (
               <>
-                <Link
-                  to="/"
-                  className={cn(
-                    'text-sm font-medium transition-colors hover:text-primary',
-                    location.pathname === '/' ? 'text-primary' : 'text-slate-600',
-                  )}
-                >
-                  Cadastro
-                </Link>
-                <Link
-                  to="/login"
-                  className={cn(
-                    'text-sm font-medium transition-colors hover:text-primary',
-                    location.pathname === '/login' ? 'text-primary' : 'text-slate-600',
-                  )}
-                >
-                  Login / Área Administrativa
-                </Link>
+                <Button variant="ghost" className="text-slate-600 font-medium" asChild>
+                  <Link to="/">Cadastro</Link>
+                </Button>
+                <Button asChild className="font-medium shadow-sm">
+                  <Link to="/login">Login</Link>
+                </Button>
               </>
             )}
 
