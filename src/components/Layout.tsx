@@ -229,7 +229,7 @@ export default function Layout() {
                     location.pathname === '/login' ? 'text-primary' : 'text-slate-600',
                   )}
                 >
-                  Entrar
+                  Login / Área Administrativa
                 </Link>
               </>
             )}
