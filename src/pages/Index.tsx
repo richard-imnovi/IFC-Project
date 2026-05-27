@@ -2,18 +2,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import {
-  User,
-  Mail,
-  Phone,
-  Book,
-  CheckCircle,
-  Loader2,
-  UserPlus,
-  Lock,
-  DollarSign,
-  Calendar as CalendarIcon,
-} from 'lucide-react'
+import { User, Mail, Phone, Book, CheckCircle, Loader2, UserPlus, Lock } from 'lucide-react'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 
@@ -45,11 +34,6 @@ const formSchema = z.object({
   password: z.string().min(6, { message: 'A senha deve ter no mínimo 6 caracteres.' }),
   whatsapp: z.string().min(15, { message: 'WhatsApp inválido. Preencha corretamente.' }),
   turma: z.string().min(1, { message: 'Selecione uma turma.' }),
-  valor: z
-    .string()
-    .min(1, { message: 'Informe o valor da mensalidade.' })
-    .refine((v) => !isNaN(parseFloat(v.replace(',', '.'))), { message: 'Valor inválido' }),
-  diaVencimento: z.string().min(1, { message: 'Selecione o dia de vencimento.' }),
 })
 
 const formatWhatsApp = (value: string) => {
@@ -113,8 +97,6 @@ export default function Index() {
       password: '',
       whatsapp: '',
       turma: '',
-      valor: '450',
-      diaVencimento: '10',
     },
   })
 
@@ -127,8 +109,6 @@ export default function Index() {
       nome: values.fullName,
       whatsapp: values.whatsapp,
       turma: values.turma,
-      valor: parseFloat(values.valor.replace(',', '.')),
-      dia_vencimento: parseInt(values.diaVencimento, 10),
     })
 
     setIsSubmitting(false)
@@ -288,59 +268,6 @@ export default function Index() {
                               Nenhuma turma disponível
                             </SelectItem>
                           )}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="valor"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-slate-600">Valor da Mensalidade (R$)</FormLabel>
-                      <FormControl>
-                        <div className="relative group">
-                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors group-focus-within:text-primary" />
-                          <Input
-                            placeholder="450.00"
-                            className="pl-10 h-11 transition-all duration-300 focus-visible:ring-primary/20 focus-visible:border-primary"
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="diaVencimento"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-slate-600">Dia de Vencimento</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="h-11 pl-10 relative transition-all duration-300 focus:ring-primary/20 focus:border-primary">
-                            <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary" />
-                            <SelectValue placeholder="Dia" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="max-h-60">
-                          {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-                            <SelectItem key={day} value={day.toString()}>
-                              {day}
-                            </SelectItem>
-                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />

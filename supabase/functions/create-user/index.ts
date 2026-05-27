@@ -23,7 +23,7 @@ Deno.serve(async (req: Request) => {
     })
 
     const body = await req.json()
-    const { email, password, nome, whatsapp, turma, valor, dia_vencimento } = body
+    const { email, password, nome, whatsapp, turma } = body
 
     const { data, error } = await supabase.auth.admin.createUser({
       email,
@@ -34,8 +34,6 @@ Deno.serve(async (req: Request) => {
         nome,
         whatsapp,
         turma,
-        valor,
-        dia_vencimento,
       },
     })
 
