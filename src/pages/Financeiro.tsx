@@ -3,7 +3,6 @@ import { BookOpen, DollarSign, LayoutDashboard, MessageSquare } from 'lucide-rea
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DashboardVisaoGeral } from '@/components/financeiro/dashboard-visao-geral'
-import { TemplatesMensalidade } from '@/components/financeiro/templates-mensalidade'
 import { Comunicacoes } from '@/components/financeiro/comunicacoes'
 import { SendMessagesModal } from '@/components/financeiro/send-messages-modal'
 
@@ -34,12 +33,6 @@ export default function Financeiro() {
             <LayoutDashboard className="w-4 h-4" /> Visão Geral
           </TabsTrigger>
           <TabsTrigger
-            value="mensalidades"
-            className="flex items-center gap-2 px-6 flex-1 sm:flex-none"
-          >
-            <DollarSign className="w-4 h-4" /> Mensalidades
-          </TabsTrigger>
-          <TabsTrigger
             value="comunicacoes"
             className="flex items-center gap-2 px-6 flex-1 sm:flex-none"
           >
@@ -51,12 +44,6 @@ export default function Financeiro() {
           className="focus-visible:outline-none focus-visible:ring-0"
         >
           <DashboardVisaoGeral />
-        </TabsContent>
-        <TabsContent
-          value="mensalidades"
-          className="focus-visible:outline-none focus-visible:ring-0"
-        >
-          <TemplatesMensalidade />
         </TabsContent>
         <TabsContent
           value="comunicacoes"

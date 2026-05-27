@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -7,6 +7,8 @@ import Index from './pages/Index'
 import Financeiro from './pages/Financeiro'
 import DashboardAluno from './pages/DashboardAluno'
 import Turmas from './pages/Turmas'
+import Alunos from './pages/Alunos'
+import Mensalidades from './pages/Mensalidades'
 import ComunicacoesPage from './pages/Comunicacoes'
 import NotFound from './pages/NotFound'
 import Layout from './components/Layout'
@@ -47,7 +49,13 @@ const App = () => {
 
               <Route element={<ProtectedRoute allowedRoles={['financeiro']} />}>
                 <Route path="/financeiro" element={<Financeiro />} />
-                <Route path="/turmas" element={<Turmas />} />
+                <Route
+                  path="/financeiro/mensalidades"
+                  element={<Navigate to="/cadastro/mensalidades" replace />}
+                />
+                <Route path="/cadastro/turmas" element={<Turmas />} />
+                <Route path="/cadastro/alunos" element={<Alunos />} />
+                <Route path="/cadastro/mensalidades" element={<Mensalidades />} />
                 <Route path="/comunicacoes" element={<ComunicacoesPage />} />
               </Route>
 
