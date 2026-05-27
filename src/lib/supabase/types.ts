@@ -599,6 +599,8 @@ export const Constants = {
 //     v_template_id uuid;
 //     v_valor numeric;
 //     v_dia_vencimento integer;
+//     v_valor_str text;
+//     v_dia_str text;
 //   BEGIN
 //     v_tipo_acesso := COALESCE(NEW.raw_user_meta_data->>'tipo_acesso', 'aluno');
 //
@@ -609,8 +611,21 @@ export const Constants = {
 //     IF v_tipo_acesso = 'aluno' THEN
 //       v_nome := COALESCE(NEW.raw_user_meta_data->>'nome', 'Aluno Sem Nome');
 //       v_whatsapp := NEW.raw_user_meta_data->>'whatsapp';
-//       v_valor := COALESCE((NEW.raw_user_meta_data->>'valor')::numeric, 450.00);
-//       v_dia_vencimento := COALESCE((NEW.raw_user_meta_data->>'dia_vencimento')::integer, 10);
+//
+//       v_valor_str := NEW.raw_user_meta_data->>'valor';
+//       v_dia_str := NEW.raw_user_meta_data->>'dia_vencimento';
+//
+//       IF v_valor_str IS NULL OR v_valor_str = '' THEN
+//         v_valor := 450.00;
+//       ELSE
+//         v_valor := v_valor_str::numeric;
+//       END IF;
+//
+//       IF v_dia_str IS NULL OR v_dia_str = '' THEN
+//         v_dia_vencimento := 10;
+//       ELSE
+//         v_dia_vencimento := v_dia_str::integer;
+//       END IF;
 //
 //       BEGIN
 //         IF NEW.raw_user_meta_data->>'turma' IS NOT NULL AND NEW.raw_user_meta_data->>'turma' != '' AND NEW.raw_user_meta_data->>'turma' != 'none' THEN

@@ -9,6 +9,7 @@ import Turmas from './pages/Turmas'
 import Alunos from './pages/Alunos'
 import Mensalidades from './pages/Mensalidades'
 import ComunicacoesPage from './pages/Comunicacoes'
+import DashboardAluno from './pages/DashboardAluno'
 import NotFound from './pages/NotFound'
 import Layout from './components/Layout'
 import Login from './pages/Login'
@@ -50,7 +51,10 @@ const App = () => {
                 path="/financeiro/mensalidades"
                 element={<Navigate to="/cadastro/mensalidades" replace />}
               />
-              <Route path="/aluno" element={<Navigate to="/cadastro/alunos" replace />} />
+
+              <Route element={<ProtectedRoute allowedRoles={['aluno']} />}>
+                <Route path="/aluno" element={<DashboardAluno />} />
+              </Route>
 
               <Route element={<ProtectedRoute allowedRoles={['financeiro']} />}>
                 <Route path="/financeiro" element={<Financeiro />} />
