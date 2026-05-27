@@ -15,64 +15,46 @@ Deno.serve(async (req: Request) => {
       throw new Error('phone_number and message_text are required')
     }
 
-    const accountSid = Deno.env.get('TWILIO_ACCOUNT_SID')
-    const authToken = Deno.env.get('TWILIO_AUTH_TOKEN')
-    const twilioNumber = Deno.env.get('TWILIO_WHATSAPP_NUMBER')
+    const apiUrl = Deno.env.get('EVOLUTION_API_URL')
+    const apiKey = Deno.env.get('EVOLUTION_API_KEY')
+    const instanceName = Deno.env.get('EVOLUTION_INSTANCE')
 
-    if (!accountSid || !authToken || !twilioNumber) {
-      throw new Error('Twilio credentials are not configured in environment secrets')
+    if (!apiUrl || !apiKey || !instanceName) {
+      throw new Error('Evolution API credentials are not configured in environment secrets')
     }
 
-    // Format destination number for WhatsApp Twilio API
-    let to = phone_number
+    // Format destination number for Evolution API (expecting digits only, with country code)
+    let to = phone_number.replace(/\D/g, '')
 
-    // Remove all non-numeric characters except +
-    to = to.replace(/[^\d+]/g, '')
-
-    // Ensure it starts with + (assume Brazil +55 if no country code provided and length is typical BR mobile)
-    if (!to.startsWith('+')) {
-      if (to.length === 10 || to.length === 11) {
-        to = `+55${to}`
-      } else {
-        to = `+${to}`
-      }
+    // Ensure it starts with country code (assume Brazil 55 if length is typical BR mobile 10 or 11)
+    if (to.length === 10 || to.length === 11) {
+      to = `55${to}`
     }
 
-    // Ensure it has whatsapp: prefix for Twilio
-    if (!to.startsWith('whatsapp:')) {
-      to = `whatsapp:${to}`
-    }
+    console.log(`Sending message type: ${message_type || 'default'} to: ${to} via Evolution API`)
 
-    // Ensure from number has whatsapp: prefix
-    let from = twilioNumber
-    if (!from.startsWith('whatsapp:')) {
-      from = `whatsapp:${from}`
-    }
+    const baseUrl = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl
+    const evolutionUrl = `${baseUrl}/message/sendText/${instanceName}`
 
-    console.log(`Sending message type: ${message_type || 'default'} to: ${to}`)
-
-    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`
-    const auth = btoa(`${accountSid}:${authToken}`)
-
-    const formParams = new URLSearchParams()
-    formParams.append('To', to)
-    formParams.append('From', from)
-    formParams.append('Body', message_text)
-
-    const response = await fetch(twilioUrl, {
+    const response = await fetch(evolutionUrl, {
       method: 'POST',
       headers: {
-        Authorization: `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
+        apikey: apiKey,
+        'Content-Type': 'application/json',
       },
-      body: formParams.toString(),
+      body: JSON.stringify({
+        number: to,
+        text: message_text,
+      }),
     })
 
-    const data = await response.json()
+    const data = await response.json().catch(() => ({}))
 
     if (!response.ok) {
-      console.error('Twilio Error:', data)
-      throw new Error(data.message || 'Failed to send WhatsApp message via Twilio')
+      console.error('Evolution API Error:', data)
+      throw new Error(
+        data?.message || data?.error || 'Failed to send WhatsApp message via Evolution API',
+      )
     }
 
     return new Response(
@@ -80,9 +62,9 @@ Deno.serve(async (req: Request) => {
         success: true,
         message: 'WhatsApp message sent successfully',
         data: {
-          sid: data.sid,
-          status: data.status,
+          status: 'sent',
           type: message_type,
+          response: data,
         },
       }),
       {

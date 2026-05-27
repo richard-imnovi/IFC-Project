@@ -51,17 +51,41 @@ export default function Index() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    supabase
-      .from('turmas')
-      .select('id, nome_turma')
-      .then(({ data }) => {
-        if (data) setTurmas(data)
-        setIsLoadingTurmas(false)
-      })
-      .catch((error) => {
+    const controller = new AbortController()
+
+    const fetchTurmas = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('turmas')
+          .select('id, nome_turma')
+          .abortSignal(controller.signal)
+
+        if (error) throw error
+
+        if (data && !controller.signal.aborted) {
+          setTurmas(data)
+        }
+      } catch (error: any) {
+        if (
+          error.name === 'AbortError' ||
+          error.message?.includes('AbortError') ||
+          error.message?.includes('steal')
+        ) {
+          return
+        }
         console.error('Erro ao buscar turmas:', error)
-        setIsLoadingTurmas(false)
-      })
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoadingTurmas(false)
+        }
+      }
+    }
+
+    fetchTurmas()
+
+    return () => {
+      controller.abort()
+    }
   }, [])
 
   const form = useForm<z.infer<typeof formSchema>>({

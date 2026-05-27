@@ -123,17 +123,24 @@ Deno.serve(async (req: Request) => {
       }
 
       if (message_type && message_text) {
-        let invokeError = null
+        let invokeError: any = null
         try {
-          const { error: fnError } = await supabase.functions.invoke('send_whatsapp_message', {
-            body: {
-              phone_number: whatsapp,
-              message_text: message_text,
-              message_type: message_type,
+          const { data, error: fnError } = await supabase.functions.invoke(
+            'send_whatsapp_message',
+            {
+              body: {
+                phone_number: whatsapp,
+                message_text: message_text,
+                message_type: message_type,
+              },
             },
-          })
-          if (fnError) invokeError = fnError
-        } catch (e) {
+          )
+          if (fnError) {
+            invokeError = fnError
+          } else if (data && data.success === false) {
+            invokeError = new Error(data.error || 'Unknown error from send_whatsapp_message')
+          }
+        } catch (e: any) {
           invokeError = e
         }
 
@@ -151,7 +158,7 @@ Deno.serve(async (req: Request) => {
           whatsapp: whatsapp,
           tipo_mensagem: message_type,
           status: invokeError ? 'falha' : 'sucesso',
-          erro: invokeError ? JSON.stringify(invokeError) : null,
+          erro: invokeError ? invokeError.message || JSON.stringify(invokeError) : null,
         })
       }
     }
