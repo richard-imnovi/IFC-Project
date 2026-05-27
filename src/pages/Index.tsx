@@ -24,7 +24,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useAuth } from '@/hooks/use-auth'
 import { supabase } from '@/lib/supabase/client'
 import { createUser } from '@/services/create-user'
 
@@ -48,7 +47,6 @@ export default function Index() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoadingTurmas, setIsLoadingTurmas] = useState(true)
   const [turmas, setTurmas] = useState<{ id: string; nome_turma: string }[]>([])
-  const { signUp } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -66,15 +64,16 @@ export default function Index() {
         if (data && !controller.signal.aborted) {
           setTurmas(data)
         }
-      } catch (error: any) {
+      } catch (error) {
+        const err = error as Error
         if (
-          error.name === 'AbortError' ||
-          error.message?.includes('AbortError') ||
-          error.message?.includes('steal')
+          err.name === 'AbortError' ||
+          err.message?.includes('AbortError') ||
+          err.message?.includes('steal')
         ) {
           return
         }
-        console.error('Erro ao buscar turmas:', error)
+        console.error('Erro ao buscar turmas:', err)
       } finally {
         if (!controller.signal.aborted) {
           setIsLoadingTurmas(false)
